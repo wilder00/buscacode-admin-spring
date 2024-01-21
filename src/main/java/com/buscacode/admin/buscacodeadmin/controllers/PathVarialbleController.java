@@ -30,7 +30,8 @@ public class PathVarialbleController {
   @Value("${config.listOfValue}")
   private String[] listOfValue;
 
-  @Value("#{'${config.listOfValue}'.split('\\.')}") //Utilizando spring expression language SpEL
+  //Utilizando spring expression language SpEL
+  @Value("#{'${config.listOfValue}'.split('\\.')}")
   private List<String> valueList;
 
   @Value("${config.code}")
