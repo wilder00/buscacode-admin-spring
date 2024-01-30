@@ -1,21 +1,21 @@
 package com.buscacode.admin.buscacodeadmin.models;
 
-public class User {
+public class UserBack {
   private String name;
   private String lastname;
   private String email;
 
   
   
-  public User() {
+  public UserBack() {
   }
 
-  public User(String name, String lastname, String email) {
+  public UserBack(String name, String lastname, String email) {
     this(name,lastname);
     this.email = email;
   }
 
-  public User(String name, String lastname) {
+  public UserBack(String name, String lastname) {
     this.name = name;
     this.lastname = lastname;
   }
