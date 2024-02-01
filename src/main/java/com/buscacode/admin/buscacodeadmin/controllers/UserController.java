@@ -7,7 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,8 @@ import com.buscacode.admin.buscacodeadmin.services.UserService;
 
 import jakarta.validation.Valid;
 
+
+@CrossOrigin(origins={"http://localhost*","https://buscacode.com"})
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,6 +34,7 @@ public class UserController {
       return service.findAll();
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<?> create(@Valid @RequestBody User user, BindingResult result) {
     if(result.hasFieldErrors()) {

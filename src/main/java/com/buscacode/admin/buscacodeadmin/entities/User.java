@@ -2,8 +2,6 @@ package com.buscacode.admin.buscacodeadmin.entities;
 
 import java.util.List;
 
-import org.hibernate.validator.constraints.UniqueElements;
-
 import com.buscacode.admin.buscacodeadmin.validation.ExistsByUsername;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,6 +17,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -39,6 +38,15 @@ public class User {
   @Size(min=4)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
+
+  @NotBlank
+  private String name;
+
+  @NotBlank
+  private String lastname;
+
+  @Email
+  private String email;
 
   @ManyToMany
   @JoinTable(
@@ -111,6 +119,38 @@ public class User {
   public void setIsAdmin(boolean isAdmin) {
     this.isAdmin = isAdmin;
   }
-  
 
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
+  public String getEmail() {
+    return email;
+  }
+
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public void setAdmin(boolean isAdmin) {
+    this.isAdmin = isAdmin;
+  }
+
+  public String getLastname() {
+    return lastname;
+  }
+
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
+  
+  
 }

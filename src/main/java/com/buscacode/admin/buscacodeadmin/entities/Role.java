@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name="roles")
@@ -17,6 +19,11 @@ public class Role {
   @Column(unique = true)
   private String name;
 
+  private String label;
+
+  @NotNull
+  @Min(0)
+  private Integer importanceOrder;
   
   public Role() {
   }
@@ -41,5 +48,22 @@ public class Role {
     this.name = name;
   }
 
+  public String getLabel() {
+    return label;
+  }
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+  public Integer getImportanceOrder() {
+    return importanceOrder;
+  }
+
+  public void setImportanceOrder(Integer importance) {
+    this.importanceOrder = importance;
+  }
+
+  
   
 }
