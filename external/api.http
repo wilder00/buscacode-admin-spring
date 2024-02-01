@@ -1,0 +1,167 @@
+//# https://httpyac.github.io/guide/examples para mayor información y documentación
+@HOST = http://localhost:5001/api
+###
+# @name usuarios
+# @description get json content of users
+//# @note Are you sure?
+# @verbose
+GET {{HOST}}/users HTTP/1.1
+
+//>> ./usuarios.json
+
+{{
+  // post request script
+  exports.header = response.headers['content-type'];
+  console.log(exports.header)
+}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Wed, 31 Jan 2024 22:15:42 GMT
+connection: close
+###
+
+POST {{HOST}}/users HTTP/1.1
+Content-Type: application/json
+
+{
+  "username" : "usertest2",
+  "password" : "password"
+}
+
+HTTP/1.1 403  - Forbidden
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-length: 0
+date: Wed, 31 Jan 2024 22:51:22 GMT
+connection: close
+###
+
+POST {{HOST}}/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Ernesto",
+  "lastname": "Mendoza Rojas",
+  "username" : "user_test2",
+  "password" : "password",
+  "isAdmin" : true
+}
+
+HTTP/1.1 201  - Created
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Thu, 01 Feb 2024 00:54:12 GMT
+connection: close
+###
+POST {{HOST}}/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username" : "user_test",
+  "password" : "password",
+  "isAdmin" : true
+}
+
+HTTP/1.1 400  - Bad Request
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Thu, 01 Feb 2024 00:53:39 GMT
+connection: close
+###
+GET {{HOST}}/users
+###
+# @name login
+//POST {{HOST}}/login
+POST http://localhost:5001/login
+{
+  "username": "wilder00",
+  "password": "password"
+}
+
+{{
+  // post request script
+  exports.authorization = response.headers['authorization'];
+}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ3aWxkZXIwMCIsImF1dGhvcml0aWVzIjoiW3tcImF1dGhvcml0eVwiOlwiUk9MRV9BRE1JTlwifSx7XCJhdXRob3JpdHlcIjpcIlJPTEVfVVNFUlwifV0iLCJ1c2VybmFtZSI6IndpbGRlcjAwIiwiZXhwIjoxNzA2NzU5NTk4LCJpYXQiOjE3MDY3NTU5OTh9.Mc7QQGncYg9N7NypXOmJSP9AXmbtzgRcnxxXP58WxmQ
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+content-length: 353
+date: Thu, 01 Feb 2024 02:53:18 GMT
+connection: close
+###
+# @ref login
+GET {{HOST}}/products
+Authorization:{{authorization}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Thu, 01 Feb 2024 02:53:25 GMT
+connection: close
+/*
+## PETICIONES CON AUTHENTICACIÓN
+---
+
+
+*/
+###
+#GET {{HOST}}/users
+GET http://localhost:5001/api/users
+//Authorization:{{authorization}}
+
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Thu, 01 Feb 2024 02:56:25 GMT
+connection: close
