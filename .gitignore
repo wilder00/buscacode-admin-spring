@@ -220,3 +220,6 @@ buildNumber.properties
 .env
 .env.prod
 .env.local
+
+external/try-file/*
+!external/try-file/.gitkeep

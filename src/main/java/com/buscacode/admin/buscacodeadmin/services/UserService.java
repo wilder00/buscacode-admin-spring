@@ -42,6 +42,11 @@ public class UserService implements Service<User> {
   public Optional<User> findById(Long id) {
     return repository.findById(id);
   }
+  
+  @Transactional(readOnly = true)
+  public Optional<User> findByUsername(String username) {
+    return repository.findByUsername(username);
+  }
 
   @Override
   @Transactional

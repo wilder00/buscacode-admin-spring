@@ -85,7 +85,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
           .signWith(SECRET_KEY)
           .compact();
         
-        response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
+        // response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
         Map<String, String> body = new HashMap<>();
         body.put("token", token);
         body.put("username", username);
