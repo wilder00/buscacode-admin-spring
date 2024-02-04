@@ -107,7 +107,6 @@ GET http://localhost:5001/api/users
 GET {{HOST}}/file-items
 Authorization:Bearer {{login.token}}
 
-
 HTTP/1.1 200  - OK
 vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
 x-content-type-options: nosniff
@@ -118,7 +117,7 @@ expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
 transfer-encoding: chunked
-date: Fri, 02 Feb 2024 03:59:02 GMT
+date: Sun, 04 Feb 2024 14:00:14 GMT
 connection: close
 ###
 # @forceRef loginRoleUser
@@ -168,5 +167,39 @@ expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
 transfer-encoding: chunked
-date: Sat, 03 Feb 2024 05:35:31 GMT
+date: Sun, 04 Feb 2024 04:43:08 GMT
+connection: close
+###
+# @forceRef login
+GET {{HOST}}/folders/4/files
+Authorization:Bearer {{login.token}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Sun, 04 Feb 2024 22:06:29 GMT
+connection: close
+###
+# @forceRef login
+GET {{HOST}}/folders/4
+Authorization:Bearer {{login.token}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Sun, 04 Feb 2024 22:06:16 GMT
 connection: close

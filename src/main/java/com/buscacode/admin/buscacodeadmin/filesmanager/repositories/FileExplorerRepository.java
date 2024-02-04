@@ -2,6 +2,10 @@ package com.buscacode.admin.buscacodeadmin.filesmanager.repositories;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -64,27 +68,21 @@ public class FileExplorerRepository {
     return saveMultipartFileToAbsolutePath(multiparFile, absolutePath, "txt");
   }
 
+  /*
+   * This will make the file saved in a directory called "others" instead of the username
+   */
   public File saveMultipartFile(MultipartFile multiparFile){
-    String baseFilePath = "";
-    String relativePath = "";
-    
+    return saveMultipartFile(multiparFile, null);
+  }
 
-    if(this.baseFilePath != null && !this.baseFilePath.isEmpty()){
-      baseFilePath = this.baseFilePath;
-    }
-    if(this.relativePath != null && !this.relativePath.isEmpty()){
-      relativePath = this.relativePath;
-    }
+  /*
+   * This will save the file into a directory of the username
+   */
+  public File saveMultipartFile(MultipartFile multiparFile, String usernameOwner){
+   
 
-    if(baseFilePath.isBlank()){
-      baseFilePath = this.userHome;
-    }
-    if(relativePath.isBlank()){
-      relativePath = DEFAULT_RELATIVE_PATH;
-    }
-
+    String fullPathDirectory = fullDirectoryPath(usernameOwner);
     String originalFilename = multiparFile.getOriginalFilename();
-    String fullPathDirectory = baseFilePath + relativePath;
     // System.out.println("fullPathDirectory ===>  "+ fullPathDirectory);
     // System.out.println("originalFilename  ===>  "+ originalFilename);
     // System.out.println("currentWorkingDirectory  ===>  "+ currentWorkingDirectory);
@@ -99,4 +97,41 @@ public class FileExplorerRepository {
     return fileSaved;
   }
 
+  public String fullDirectoryPath(String usernameOwner) {
+    String baseFilePath = "";
+    String relativePath = "";
+
+    if(this.baseFilePath != null && !this.baseFilePath.isEmpty()){
+      baseFilePath = this.baseFilePath;
+    }
+    if(this.relativePath != null && !this.relativePath.isEmpty()){
+      relativePath = this.relativePath;
+    }
+
+    if(baseFilePath.isBlank()){
+      baseFilePath = this.userHome;
+    }
+    if(relativePath.isBlank()){
+      relativePath = DEFAULT_RELATIVE_PATH;
+    }
+    if(usernameOwner != null && !usernameOwner.isBlank()){
+      relativePath = relativePath.concat(File.separator).concat(usernameOwner);
+    }else {
+      relativePath = relativePath.concat(File.separator).concat("others");
+    }
+
+    return baseFilePath + relativePath;
+  }
+
+  public String changeUserDirectoryName(String currentUsername, String newUsername) throws IOException {
+    String currentUserDirectoryPath = fullDirectoryPath(currentUsername);
+    String newtUserDirectoryPath = fullDirectoryPath(newUsername);
+    
+    Path sourceDirectory = Paths.get(currentUserDirectoryPath);
+    Path targetDirectory = Paths.get(newtUserDirectoryPath);
+
+    Path movedDirectory = Files.move(sourceDirectory, targetDirectory, StandardCopyOption.REPLACE_EXISTING);
+
+    return movedDirectory.toAbsolutePath().toString();
+  }
 }

@@ -46,8 +46,11 @@ public class FileItemController {
 
   @GetMapping
   public List<File> getFileItems(){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String loggedUsername = authentication.getName();
     
-    return new ArrayList<File>();
+    
+    return fileService.getAllByUsername(loggedUsername);
   }
 
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
