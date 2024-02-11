@@ -16,6 +16,8 @@ public interface FolderRepository extends CrudRepository<Folder,Long>{
   public List<Folder> getAllByIdAndCreatedBy_username(Long id, String username);
   public Optional<Folder> findByIdAndCreatedBy_Username(Long id, String username);
 
+  public List<Folder> findByFolderFather_idAndCreatedBy_Username(Long id, String username);
+
   // @Query("SELECT f FROM File f " +
   //         "WHERE f.createdBy.username = :username " +
   //         "AND f.folder.id = :folderId")

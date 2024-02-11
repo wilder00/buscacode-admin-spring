@@ -15,7 +15,7 @@ import com.buscacode.admin.buscacodeadmin.filesmanager.repositories.FolderReposi
 
 @Service
 public class FileFolderService implements FolderService {
-
+  private final Long ROOT_FOLDER_ID = 1L;
   @Autowired
   private FolderRepository folderRepository;
 
@@ -26,15 +26,24 @@ public class FileFolderService implements FolderService {
       .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   @Override
   public Optional<Folder> findFolderByIdAndUsername(Long id, String username) {
 
     return folderRepository.findByIdAndCreatedBy_Username(id, username);
   }
 
+  @Transactional(readOnly = true)
   @Override
   public List<Folder> getAllByIdAndUsername(Long id, String username) {
     return folderRepository.getAllByIdAndCreatedBy_username(id, username);
+  }
+  
+  @Transactional(readOnly = true)
+  @Override
+  public List<Folder> getAllByFolderFatherIdAndUsername(Long id, String username) {
+    if(id == 0 ) id = ROOT_FOLDER_ID;
+    return folderRepository.findByFolderFather_idAndCreatedBy_Username(id, username);
   }
 
   

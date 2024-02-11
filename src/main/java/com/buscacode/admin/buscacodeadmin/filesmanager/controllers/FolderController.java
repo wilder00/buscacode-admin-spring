@@ -52,19 +52,17 @@ public class FolderController {
     return  ResponseEntity.notFound().build();
   }
 
-
   @GetMapping("/{folderId}/folders")
   public List<Folder> getFolderByIdAndUsername(@PathVariable Long folderId){
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
-    return fileFolderService.getAllByIdAndUsername(folderId, loggedUsername );
+    return fileFolderService.getAllByFolderFatherIdAndUsername(folderId, loggedUsername );
   }
+
   @GetMapping("/{folderId}/files")
   public List<File> getFileItems(@PathVariable Long folderId){
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
-    
-    
     return fileService.getAllByUsernameAndFolderId(loggedUsername, folderId);
   }
 

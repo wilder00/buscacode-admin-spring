@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -31,6 +32,7 @@ public class File {
   //@NotEmpty
   private String originalName;
   private String Path;
+  @JsonIgnore
   private String absolutePath;
   private String extension;
   private String description;

@@ -65,7 +65,7 @@ public class FileItemController {
       body.put("error", "File cannot be null");
       return ResponseEntity.badRequest().body(body);
     }
-
+    System.out.println("SHOUL not  BE HEERE in save post");
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
     Optional<User> optionalUser = userService.findByUsername(loggedUsername);

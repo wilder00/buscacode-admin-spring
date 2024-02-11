@@ -36,7 +36,6 @@ public class FileExplorerRepository {
     
     String fullPathFile = absoluteDirectoryPath + fileName;
     File fileInSystem = new File(fullPathFile);
-    
     if(fileInSystem.exists()){
       throw new FileExistsException();
     }
