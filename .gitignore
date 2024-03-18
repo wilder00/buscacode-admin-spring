@@ -220,6 +220,11 @@ buildNumber.properties
 .env
 .env.prod
 .env.local
+.env.production
 
 external/try-file/*
 !external/try-file/.gitkeep
+
+# folder to save files
+files/*
+!files/.gitkeep

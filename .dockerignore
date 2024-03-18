@@ -1,0 +1,11 @@
+.DS_Store
+.git
+.dockerignore
+*.md
+dist
+.vscode
+logs
+target
+conf/
+libraries/
+plugins/

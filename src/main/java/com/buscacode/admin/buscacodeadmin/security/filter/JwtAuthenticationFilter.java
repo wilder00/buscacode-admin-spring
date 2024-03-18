@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,16 +28,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.*;
+//import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.*;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
 
   private AuthenticationManager authenticationManager;
-  
+  private final SecretKey SECRET_KEY;
+  private final String CONTENT_TYPE;
 
-  
-  public JwtAuthenticationFilter(AuthenticationManager authenticationManager){
+  public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig){
     this.authenticationManager = authenticationManager;
+    SECRET_KEY = tokenJwtConfig.getSecretKey();
+    CONTENT_TYPE = TokenJwtConfig.CONTENT_TYPE;
   }
 
   @Override
@@ -49,13 +54,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       password = user.getPassword();
       
     } catch (StreamReadException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (DatabindException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -82,6 +84,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
           .claims(claims)
           .expiration(new Date(System.currentTimeMillis() + 3600000 * 100)) //indicamos que expirará dentro de una hora * 100
           .issuedAt(new Date())
+          //.signWith(SECRET_KEY)
           .signWith(SECRET_KEY)
           .compact();
         

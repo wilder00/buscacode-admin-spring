@@ -3,9 +3,12 @@ package com.buscacode.admin.buscacodeadmin.security;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +30,12 @@ import com.buscacode.admin.buscacodeadmin.security.filter.JwtValidationFilter;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true) //Para incluir reglas en los mismos controladores por roles, sino solo sería por aquí
+@PropertySources({
+	@PropertySource(value="classpath:security.properties", encoding = "UTF-8"),
+})
 public class SecurityConfig {
+  @Value("${security.secret.seed:}")
+  private String secretSeed;
 
   @Autowired
   private AuthenticationConfiguration authenticationConfiguration;
@@ -41,6 +49,10 @@ public class SecurityConfig {
   PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+  @Bean
+  TokenJwtConfig secretKey() {
+    return new TokenJwtConfig(secretSeed);
+  }
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -53,8 +65,8 @@ public class SecurityConfig {
       .requestMatchers(HttpMethod.DELETE,"/api/products/{id}").hasRole("ADMIN")
       .anyRequest().authenticated()
     )
-    .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-    .addFilter(new JwtValidationFilter(authenticationManager()))
+    .addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKey()))
+    .addFilter(new JwtValidationFilter(authenticationManager(), secretKey()))
     .csrf(config -> config.disable()) //d
     .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
     .sessionManagement(management-> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //para que la sescion http no tenga estado y se maneje por tokens

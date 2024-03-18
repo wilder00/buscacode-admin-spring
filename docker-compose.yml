@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  buscacode-admin-spring:
+    container_name: "buscacode-admin-spring"
+    build:
+      context: .
+      dockerfile: docker/deploy/Dockerfile
+      args:
+        PORT: ${PORT}
+        DB_URL_CONEXION: ${DB_URL_CONEXION}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+        FILES_BASEPATH: ${FILES_BASEPATH}
+        JWT_SEED: ${JWT_SEED}
+    volumes:
+      - ./files:/app/files
+    ports:
+      - "${PORT}:${PORT}"
+      #- 4321:4321
+    env_file:
+      - .env.production
+    environment:
+      - TZ=America/Lima
+      - DB_URL_CONEXION=${DB_URL_CONEXION}
+      - HOST=0.0.0.0
+      - PORT=${PORT}
+    network_mode: "bridge"
+    # networks:
+    #   - mi-red
+    extra_hosts:
+      - "local.net:192.168.0.109"
+      - "host.docker.internal:host-gateway"
+    expose:
+      #- '8001/tcp'
+      - '5001/tcp'
+      - '3306/tcp'
+
+# networks:
+#   mi-red:
+#     name: mi-red
+#     external: true

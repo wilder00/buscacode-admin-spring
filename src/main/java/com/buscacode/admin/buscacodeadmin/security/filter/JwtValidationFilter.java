@@ -3,13 +3,14 @@ package com.buscacode.admin.buscacodeadmin.security.filter;
 import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.CONTENT_TYPE;
 import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.HEADER_AUTHORIZATION;
 import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.PREFIX_TOKEN;
-import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.SECRET_KEY;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.buscacode.admin.buscacodeadmin.security.SimpleGrantedAuthorityJsonCreator;
+import com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
@@ -32,8 +34,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtValidationFilter extends BasicAuthenticationFilter{
 
-  public JwtValidationFilter(AuthenticationManager authenticationManager) {
+  private final SecretKey SECRET_KEY;
+
+  public JwtValidationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig) {
     super(authenticationManager);
+    SECRET_KEY = tokenJwtConfig.getSecretKey();
   }
 
   @Override

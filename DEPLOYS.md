@@ -35,3 +35,10 @@ java -jar ./PATH/TO/THE/JAR.jar
 ```
 
 
+
+
+## Dockers
+
+```
+docker-compose --env-file .env.production build  > build.log 2>&1
+```
