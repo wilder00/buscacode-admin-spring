@@ -21,15 +21,15 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
-@Table(name="files")
+@Table(name = "files")
 public class File {
-  
+
   @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  //@NotEmpty
+  // @NotEmpty
   private String name;
-  //@NotEmpty
+  // @NotEmpty
   private String originalName;
   private String Path;
   @JsonIgnore
@@ -39,10 +39,10 @@ public class File {
   private String url;
   private String typeFile;
 
-  //private Long folderId;
+  // private Long folderId;
   @ManyToOne(cascade = CascadeType.MERGE)
   @JoinColumn(name = "folder_id", referencedColumnName = "id", insertable = false, updatable = false)
-  @JsonIgnoreProperties(value={"folders", "folderFather", "createdBy"})
+  @JsonIgnoreProperties(value = { "folders", "folderFather", "createdBy" })
   private Folder folder;
 
   @ManyToOne(cascade = CascadeType.MERGE)
@@ -176,7 +176,4 @@ public class File {
   public void setFile(MultipartFile document) {
     this.file = document;
   }
-
-
-  
 }

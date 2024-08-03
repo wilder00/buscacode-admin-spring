@@ -3,6 +3,7 @@ package com.buscacode.admin.buscacodeadmin.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -14,13 +15,13 @@ import com.buscacode.admin.buscacodeadmin.entities.Role;
 import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.repositories.RoleRepository;
 import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
+import com.buscacode.admin.buscacodeadmin.services.interfaces.CredentialService;
 import com.buscacode.admin.buscacodeadmin.services.interfaces.Service;
 
 @org.springframework.stereotype.Service
-public class UserService implements Service<User> {
+public class UserService implements CredentialService {
   private final String ROLE_ADMIN = "ROLE_ADMIN";
   private final String ROLE_USER = "ROLE_USER";
-  
 
   @Autowired
   private UserRepository repository;
@@ -33,16 +34,16 @@ public class UserService implements Service<User> {
   @Override
   public List<User> findAll() {
     return StreamSupport
-            .stream(repository.findAll().spliterator(), false)
-            .collect(Collectors.toList());
+        .stream(repository.findAll().spliterator(), false)
+        .collect(Collectors.toList());
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Optional<User> findById(Long id) {
+  public Optional<User> findById(UUID id) {
     return repository.findById(id);
   }
-  
+
   @Transactional(readOnly = true)
   public Optional<User> findByUsername(String username) {
     return repository.findByUsername(username);
@@ -52,28 +53,26 @@ public class UserService implements Service<User> {
   @Transactional
   public User save(User user) {
 
-    Optional<Role> optionaRoleUser = roleRepository.findByName(ROLE_USER);
+    Optional<Role> optionalRoleUser = roleRepository.findByName(ROLE_USER);
     List<Role> roles = new ArrayList<>();
-    
-    //optionaRoleUser.ifPresent(role -> roles.add(role));
-    optionaRoleUser.ifPresent(roles::add);
 
-    if(user.getIsAdmin()) {
-      Optional<Role> optionaRoleAdmin = roleRepository.findByName(ROLE_ADMIN);
-      optionaRoleAdmin.ifPresent(role -> roles.add(role));
+    // optionalRoleUser.ifPresent(role -> roles.add(role));
+    optionalRoleUser.ifPresent(roles::add);
+
+    if (user.getIsAdmin()) {
+      Optional<Role> optionalRoleAdmin = roleRepository.findByName(ROLE_ADMIN);
+      optionalRoleAdmin.ifPresent(role -> roles.add(role));
     }
 
     user.setRoles(roles);
 
-    String passwordEncoded = passwordEncoder.encode( user.getPassword() );
+    String passwordEncoded = passwordEncoder.encode(user.getPassword());
     user.setPassword(passwordEncoded);
     return repository.save(user);
   }
 
-
-
   @Override
-  public Optional<User> update(Long id, User recurso) {
+  public Optional<User> update(UUID id, User recurso) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'update'");
   }
@@ -84,7 +83,7 @@ public class UserService implements Service<User> {
     throw new UnsupportedOperationException("Unimplemented method 'delete'");
   }
 
-  public boolean existByUsername(String username){
+  public boolean existByUsername(String username) {
     return repository.existsByUsername(username);
   }
 }

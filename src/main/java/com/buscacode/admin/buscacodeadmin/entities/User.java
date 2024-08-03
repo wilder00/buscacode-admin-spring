@@ -1,6 +1,11 @@
 package com.buscacode.admin.buscacodeadmin.entities;
 
 import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.buscacode.admin.buscacodeadmin.validation.ExistsByUsername;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,12 +27,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
-  @Id
+  /* @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Long id; */
+
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
   @ExistsByUsername
   @Column(unique = true)
@@ -35,7 +46,7 @@ public class User {
   private String username;
 
   @NotBlank
-  @Size(min=4)
+  @Size(min = 4)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
 
@@ -49,34 +60,37 @@ public class User {
   private String email;
 
   @ManyToMany
-  @JoinTable(
-    name="users_roles",
-    joinColumns= @JoinColumn(name="user_id"),
-    inverseJoinColumns=@JoinColumn(name="role_id"),
-    uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role_id"})}
-  )
+  @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"), uniqueConstraints = {
+      @UniqueConstraint(columnNames = { "user_id", "role_id" }) })
   private List<Role> roles;
-  
+
   private Boolean isEnabled;
 
-  //Indica que es solo para el modelo y no para base de datos
+  // Indica que es solo para el modelo y no para base de datos
   @Transient
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private boolean isAdmin;
 
+  /* @CreationTimestamp
+    @Column(updatable = false, name = "created_at")
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt; */
+
   @PrePersist
   public void prePersist() {
-    if(isEnabled == null){
+    if (isEnabled == null) {
       isEnabled = true;
     }
   }
 
-
-  public Long getId() {
+  public UUID getId() {
     return id;
   }
 
-  public void setId(Long id) {
+  public void setId(UUID id) {
     this.id = id;
   }
 
@@ -120,28 +134,20 @@ public class User {
     this.isAdmin = isAdmin;
   }
 
-
   public String getName() {
     return name;
   }
-
 
   public void setName(String name) {
     this.name = name;
   }
 
-
   public String getEmail() {
     return email;
   }
 
-
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public void setAdmin(boolean isAdmin) {
-    this.isAdmin = isAdmin;
   }
 
   public String getLastname() {
@@ -151,6 +157,5 @@ public class User {
   public void setLastname(String lastname) {
     this.lastname = lastname;
   }
-  
-  
+
 }

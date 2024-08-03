@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       user = new ObjectMapper().readValue(request.getInputStream(), User.class);
       username = user.getUsername();
       password = user.getPassword();
-      
+
     } catch (StreamReadException e) {
       e.printStackTrace();
     } catch (DatabindException e) {
@@ -62,23 +62,27 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
-    return authenticationManager.authenticate(authenticationToken);
+    Authentication authentication = authenticationManager.authenticate(authenticationToken);
+    return authentication;
 
   }
 
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
       Authentication authResult) throws IOException, ServletException {
-    
+
         org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
         String username = user.getUsername();
+
+        System.out.println("la autenticación: =>>>>>>>>>>");
+        System.out.println();
         Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
 
         Claims claims = Jwts.claims()
           .add("authorities", new ObjectMapper().writeValueAsString(roles))
           .add("username", username)
         .build();
-        
+
         String token = Jwts.builder()
           .subject(username)
           .claims(claims)
@@ -87,7 +91,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
           //.signWith(SECRET_KEY)
           .signWith(SECRET_KEY)
           .compact();
-        
+
         // response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
         Map<String, String> body = new HashMap<>();
         body.put("token", token);

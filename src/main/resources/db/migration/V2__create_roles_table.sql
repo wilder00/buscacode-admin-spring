@@ -1,0 +1,10 @@
+CREATE TABLE roles (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  label VARCHAR(150) NOT NULL,
+  importance_order INT NOT NULL DEFAULT 100,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO roles(name, label) VALUES('ROLE_ADMIN', 'Administrador');
+INSERT INTO roles(name, label) VALUES('ROLE_USER', 'Usuario');

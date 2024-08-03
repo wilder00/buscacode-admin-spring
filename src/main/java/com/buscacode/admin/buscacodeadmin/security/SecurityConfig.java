@@ -27,11 +27,10 @@ import org.springframework.web.filter.CorsFilter;
 import com.buscacode.admin.buscacodeadmin.security.filter.JwtAuthenticationFilter;
 import com.buscacode.admin.buscacodeadmin.security.filter.JwtValidationFilter;
 
-
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true) //Para incluir reglas en los mismos controladores por roles, sino solo sería por aquí
+@EnableMethodSecurity(prePostEnabled = true) // Para incluir reglas en los mismos controladores por roles, sino solo sería por aquí
 @PropertySources({
-	@PropertySource(value="classpath:security.properties", encoding = "UTF-8"),
+    @PropertySource(value = "classpath:security.properties", encoding = "UTF-8"),
 })
 public class SecurityConfig {
   @Value("${security.secret.seed:}")
@@ -49,6 +48,7 @@ public class SecurityConfig {
   PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
   @Bean
   TokenJwtConfig secretKey() {
     return new TokenJwtConfig(secretSeed);
@@ -57,26 +57,25 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.authorizeHttpRequests((auths) -> auths
-      .requestMatchers(HttpMethod.GET,"/api/users").permitAll()
-      .requestMatchers(HttpMethod.POST,"/api/users/register").permitAll()
-      .requestMatchers(HttpMethod.POST,"/api/users").hasRole("ADMIN")
-      .requestMatchers(HttpMethod.GET,"/api/products").hasAnyRole("ADMIN", "USER")
-      .requestMatchers(HttpMethod.PUT,"/api/products/{id}").hasRole("ADMIN")
-      .requestMatchers(HttpMethod.DELETE,"/api/products/{id}").hasRole("ADMIN")
-      .anyRequest().authenticated()
-    )
-    .addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKey()))
-    .addFilter(new JwtValidationFilter(authenticationManager(), secretKey()))
-    .csrf(config -> config.disable()) //d
-    .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
-    .sessionManagement(management-> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //para que la sescion http no tenga estado y se maneje por tokens
-    .build();
+      .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+      .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+      .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
+      .requestMatchers(HttpMethod.GET, "/api/products").hasAnyRole("ADMIN", "USER")
+      .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("ADMIN")
+      .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
+      .anyRequest().authenticated())
+      .addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKey()))
+      .addFilter(new JwtValidationFilter(authenticationManager(), secretKey()))
+      .csrf(config -> config.disable()) // d
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // para que la sescion http no tenga estado y se maneje por tokens
+      .build();
   }
 
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOriginPatterns(Arrays.asList("http://localhost*", "https://wildertrujillo.com"));
+    config.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "https://wildertrujillo.com"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
     config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
     config.setAllowCredentials(true);
@@ -89,7 +88,8 @@ public class SecurityConfig {
 
   @Bean
   FilterRegistrationBean<CorsFilter> corsFilter() {
-    FilterRegistrationBean<CorsFilter> corsBean = new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
+    FilterRegistrationBean<CorsFilter> corsBean = new FilterRegistrationBean<>(
+        new CorsFilter(corsConfigurationSource()));
     corsBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
     return corsBean;
   }

@@ -1,0 +1,11 @@
+CREATE TABLE folders (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  folder_father_id BIGINT,
+  description TEXT,
+  name VARCHAR(255),
+  path_of_ids VARCHAR(255),
+  created_by VARCHAR(250)  COMMENT 'The username of the user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL
+);

@@ -14,6 +14,19 @@ GET {{HOST}}/users HTTP/1.1
   exports.header = response.headers['content-type'];
   console.log(exports.header)
 }}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Wed, 24 Jul 2024 10:49:15 GMT
+connection: close
 ###
 
 POST {{HOST}}/users HTTP/1.1
@@ -33,7 +46,7 @@ pragma: no-cache
 expires: 0
 x-frame-options: DENY
 content-length: 0
-date: Fri, 23 Feb 2024 05:17:31 GMT
+date: Fri, 02 Aug 2024 10:30:33 GMT
 connection: close
 ###
 
@@ -82,7 +95,7 @@ expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
 content-length: 353
-date: Mon, 04 Mar 2024 02:36:51 GMT
+date: Fri, 02 Aug 2024 10:30:03 GMT
 connection: close
 ###
 # @name loginRoleUser
@@ -100,14 +113,70 @@ Authorization:{{authorization}}
 #GET {{HOST}}/users
 GET http://localhost:5001/api/users
 //Authorization:{{authorization}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Fri, 02 Aug 2024 10:38:07 GMT
+connection: close
+###
+# @forceRef login
+GET {{HOST}}/users/09d75780-0336-45be-81fc-eae074fa7942
+Authorization:Bearer {{login.token}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Fri, 02 Aug 2024 10:45:48 GMT
+connection: close
 ###
 # @forceRef login
 GET {{HOST}}/file-items
 Authorization:Bearer {{login.token}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Fri, 02 Aug 2024 10:39:18 GMT
+connection: close
 ###
 # @forceRef loginRoleUser
 GET {{HOST}}/folders
 Authorization:Bearer {{loginRoleUser.token}}
+
+HTTP/1.1 401  - Unauthorized
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+content-length: 184
+date: Fri, 02 Aug 2024 10:39:28 GMT
+connection: close
 ###
 # @forceRef login
 POST {{HOST}}/file-items
@@ -126,12 +195,38 @@ invoice_title
 Content-Disposition: form-data; name="file"; filename="Wilder-Trujillo-cv.pdf"
 Content-Type: application/pdf
 
-< ./try-file/Wilder-Trujillo-cv.pdf
+< ./try-file/derivadas.pdf
 --WebKitFormBoundary--
+
+HTTP/1.1 201  - Created
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Wed, 24 Jul 2024 12:33:48 GMT
+connection: close
 ###
 # @forceRef login
 GET {{HOST}}/folders/4/files
 Authorization:Bearer {{login.token}}
+
+HTTP/1.1 200  - OK
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+transfer-encoding: chunked
+date: Fri, 02 Aug 2024 10:39:53 GMT
+connection: close
 ###
 # @forceRef login
 GET {{HOST}}/folders/3/folders
