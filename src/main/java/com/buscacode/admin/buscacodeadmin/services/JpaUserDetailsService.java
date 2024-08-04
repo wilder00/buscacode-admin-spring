@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
+import com.buscacode.admin.buscacodeadmin.security.model.UserDetail;
 
 @Service
 public class JpaUserDetailsService implements UserDetailsService{
@@ -36,7 +37,16 @@ public class JpaUserDetailsService implements UserDetailsService{
     .map(role -> new SimpleGrantedAuthority(role.getName()))
     .collect(Collectors.toList());
 
-    return new org.springframework.security.core.userdetails.User(user.getUsername(),
+    /* org.springframework.security.core.userdetails.User springUser = new org.springframework.security.core.userdetails.User(user.getUsername(),
+      user.getPassword(),
+      user.getIsEnabled(),
+      true,
+      true,
+      true,
+      authorities
+    ); */
+
+    UserDetail springUser = new UserDetail(user.getId(),user.getUsername(),
       user.getPassword(),
       user.getIsEnabled(),
       true,
@@ -44,7 +54,9 @@ public class JpaUserDetailsService implements UserDetailsService{
       true,
       authorities
     );
+
+    return springUser;
   }
-  
+
 
 }

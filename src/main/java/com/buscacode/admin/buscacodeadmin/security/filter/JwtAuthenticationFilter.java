@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -17,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig;
+import com.buscacode.admin.buscacodeadmin.security.model.UserDetail;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,14 +73,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
       Authentication authResult) throws IOException, ServletException {
 
-        org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
+        //org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
+        UserDetail user = (UserDetail) authResult.getPrincipal();
         String username = user.getUsername();
-
-        System.out.println("la autenticación: =>>>>>>>>>>");
-        System.out.println();
+        UUID id = user.getId();
         Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
 
         Claims claims = Jwts.claims()
+          .add("id", id)
           .add("authorities", new ObjectMapper().writeValueAsString(roles))
           .add("username", username)
         .build();
@@ -94,6 +96,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
         Map<String, String> body = new HashMap<>();
+        body.put("id", id.toString());
         body.put("token", token);
         body.put("username", username);
         body.put("message", String.format("Hola, %s. Has iniciado sesión!", username));

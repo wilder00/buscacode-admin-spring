@@ -25,7 +25,7 @@ expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
 transfer-encoding: chunked
-date: Wed, 24 Jul 2024 10:49:15 GMT
+date: Sun, 04 Aug 2024 01:28:20 GMT
 connection: close
 ###
 
@@ -94,8 +94,8 @@ pragma: no-cache
 expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
-content-length: 353
-date: Fri, 02 Aug 2024 10:30:03 GMT
+content-length: 456
+date: Sun, 04 Aug 2024 01:32:03 GMT
 connection: close
 ###
 # @name loginRoleUser
@@ -105,6 +105,19 @@ POST http://localhost:5001/login
   "username": "user_test",
   "password": "password"
 }
+
+HTTP/1.1 401  - Unauthorized
+vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json;charset=UTF-8
+content-length: 99
+date: Fri, 02 Aug 2024 11:08:36 GMT
+connection: close
 ###
 # @ref login
 GET {{HOST}}/products
