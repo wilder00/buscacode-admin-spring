@@ -71,6 +71,10 @@ Content-Type: application/json
 }
 ###
 GET {{HOST}}/users
+/*
+## Login
+---
+*/
 ###
 # @name login
 //POST {{HOST}}/login
