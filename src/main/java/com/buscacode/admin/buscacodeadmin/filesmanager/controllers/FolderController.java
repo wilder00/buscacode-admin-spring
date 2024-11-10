@@ -21,20 +21,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping(value="/api/folders")
-public class FolderController { 
+@RequestMapping(value="/folders")
+public class FolderController {
 
   @Autowired
   private FileService fileService;
   @Autowired
   private FolderService fileFolderService;
-  
+
 
   @GetMapping
   public List<Folder> getFolders() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    System.out.println("===================>>>");
-    System.out.println(authentication.getName());
     String loggedUsername = authentication.getName();
     return fileFolderService.getFoldersByUsername(loggedUsername);
   }
@@ -65,7 +63,4 @@ public class FolderController {
     String loggedUsername = authentication.getName();
     return fileService.getAllByUsernameAndFolderId(loggedUsername, folderId);
   }
-
-  
-  
 }

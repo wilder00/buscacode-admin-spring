@@ -28,7 +28,7 @@ import com.buscacode.admin.buscacodeadmin.services.ProductService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/products")
 public class ProductController {
 
   @Autowired
@@ -59,7 +59,7 @@ public class ProductController {
 
     Product productNew = productService.save(product);
     return ResponseEntity.status(HttpStatus.CREATED).body(productNew);
-  } 
+  }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/{id}")
@@ -74,7 +74,7 @@ public class ProductController {
     }
     return ResponseEntity.notFound().build();
   }
-  
+
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<?> delete(@PathVariable Long id) {
@@ -92,7 +92,7 @@ public class ProductController {
    //BindingResult result debe estar al costado derecho proximo del @valid
    private ResponseEntity<?> validation(BindingResult result) {
     Map<String, String> errors = new HashMap<>();
-    
+
     result.getFieldErrors().forEach(err -> {
       errors.put(err.getField(), "El campo "+ err.getField() + " " + err.getDefaultMessage());
     });

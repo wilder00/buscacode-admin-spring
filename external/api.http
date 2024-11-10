@@ -1,5 +1,5 @@
 //# https://httpyac.github.io/guide/examples para mayor información y documentación
-@HOST = http://localhost:5001/api
+@HOST = http://localhost:5001
 ###
 # @name usuarios
 # @description get json content of users
@@ -99,7 +99,7 @@ expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
 content-length: 456
-date: Sun, 04 Aug 2024 01:32:03 GMT
+date: Wed, 07 Aug 2024 01:01:07 GMT
 connection: close
 ###
 # @name loginRoleUser
@@ -148,7 +148,7 @@ connection: close
 GET {{HOST}}/users/09d75780-0336-45be-81fc-eae074fa7942
 Authorization:Bearer {{login.token}}
 
-HTTP/1.1 200  - OK
+HTTP/1.1 404  - Not Found
 vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
 x-content-type-options: nosniff
 x-xss-protection: 0
@@ -156,9 +156,8 @@ cache-control: no-cache, no-store, max-age=0, must-revalidate
 pragma: no-cache
 expires: 0
 x-frame-options: DENY
-content-type: application/json;charset=UTF-8
-transfer-encoding: chunked
-date: Fri, 02 Aug 2024 10:45:48 GMT
+content-length: 0
+date: Tue, 06 Aug 2024 23:20:55 GMT
 connection: close
 ###
 # @forceRef login
@@ -175,14 +174,15 @@ expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
 transfer-encoding: chunked
-date: Fri, 02 Aug 2024 10:39:18 GMT
+date: Wed, 07 Aug 2024 01:01:16 GMT
 connection: close
 ###
 # @forceRef loginRoleUser
 GET {{HOST}}/folders
-Authorization:Bearer {{loginRoleUser.token}}
+Authorization:Bearer {{login.token}}
+#Authorization:Bearer {{loginRoleUser.token}}
 
-HTTP/1.1 401  - Unauthorized
+HTTP/1.1 200  - OK
 vary: Origin, Access-Control-Request-Method, Access-Control-Request-Headers
 x-content-type-options: nosniff
 x-xss-protection: 0
@@ -191,9 +191,13 @@ pragma: no-cache
 expires: 0
 x-frame-options: DENY
 content-type: application/json;charset=UTF-8
-content-length: 184
-date: Fri, 02 Aug 2024 10:39:28 GMT
+transfer-encoding: chunked
+date: Tue, 06 Aug 2024 23:37:35 GMT
 connection: close
+###
+# @forceRef loginRoleUser
+GET {{HOST}}/folders
+Authorization:Bearer {{login.token}}
 ###
 # @forceRef login
 POST {{HOST}}/file-items

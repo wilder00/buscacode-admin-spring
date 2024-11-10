@@ -34,7 +34,7 @@ import com.buscacode.admin.buscacodeadmin.services.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value="/api/file-items")
+@RequestMapping(value="/file-items")
 public class FileItemController {
 
   @Autowired
@@ -48,8 +48,6 @@ public class FileItemController {
   public List<File> getFileItems(){
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
-    
-    
     return fileService.getAllByUsername(loggedUsername);
   }
 
@@ -60,7 +58,7 @@ public class FileItemController {
       return validator.validation(result);
     }
     Map<String,String> body = new HashMap<>();
-    
+
     if (file == null || file.getFile() == null) {
       body.put("error", "File cannot be null");
       return ResponseEntity.badRequest().body(body);
@@ -80,6 +78,6 @@ public class FileItemController {
     }
 
     return ResponseEntity.status(HttpStatus.CREATED).body(newFile);
-  } 
+  }
 
 }

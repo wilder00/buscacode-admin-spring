@@ -38,13 +38,11 @@ public class FileFolderService implements FolderService {
   public List<Folder> getAllByIdAndUsername(Long id, String username) {
     return folderRepository.getAllByIdAndCreatedBy_username(id, username);
   }
-  
+
   @Transactional(readOnly = true)
   @Override
   public List<Folder> getAllByFolderFatherIdAndUsername(Long id, String username) {
     if(id == 0 ) id = ROOT_FOLDER_ID;
     return folderRepository.findByFolderFather_idAndCreatedBy_Username(id, username);
   }
-
-  
 }

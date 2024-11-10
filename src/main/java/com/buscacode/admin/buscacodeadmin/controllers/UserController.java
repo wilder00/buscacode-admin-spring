@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @CrossOrigin(origins = { "http://localhost:*", "https://buscacode.com" })
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
   @Autowired
   private UserService service;

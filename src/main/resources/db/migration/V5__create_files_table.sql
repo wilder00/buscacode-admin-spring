@@ -9,7 +9,7 @@ CREATE TABLE files (
   folder_id BIGINT,
   url VARCHAR(255),
   type_file VARCHAR(50),
-  created_by VARCHAR(250) COMMENT 'The username of the user',
+  created_by VARCHAR(100) COMMENT 'The username of the user',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL,
