@@ -1,7 +1,18 @@
 {
   "java.configuration.updateBuildConfiguration": "interactive",
   //"editor.formatOnSave": true,
-
+  "[java]": {
+    "editor.formatOnSave": true
+  },
   "cSpell.language": "en,es-ES",
-  "cSpell.words": []
+  "cSpell.words": [
+    "buscacode",
+    "buscacodeadmin",
+    "filesmanager",
+    "insertable",
+    "lastname",
+    "Lastname",
+    "nullable"
+  ],
+  "java.compile.nullAnalysis.mode": "automatic"
 }

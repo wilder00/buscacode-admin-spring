@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buscacode.admin.buscacodeadmin.entities.Role;
 import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.buscacode.admin.buscacodeadmin.events.UserCreatedEvent;
 import com.buscacode.admin.buscacodeadmin.repositories.RoleRepository;
 import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
 import com.buscacode.admin.buscacodeadmin.services.interfaces.CredentialService;
@@ -30,6 +32,9 @@ public class UserService implements CredentialService {
   private RoleRepository roleRepository;
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private ApplicationEventPublisher eventPublisher;
 
   @Override
   public List<User> findAll() {
@@ -68,7 +73,9 @@ public class UserService implements CredentialService {
 
     String passwordEncoded = passwordEncoder.encode(user.getPassword());
     user.setPassword(passwordEncoded);
-    return repository.save(user);
+    User savedUser = repository.save(user);
+    eventPublisher.publishEvent(new UserCreatedEvent(this, savedUser));
+    return savedUser;
   }
 
   @Override

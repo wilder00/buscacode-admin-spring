@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.buscacode.admin.buscacodeadmin.entities.Product;
 import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.filesmanager.entities.Folder;
 import com.buscacode.admin.buscacodeadmin.filesmanager.repositories.FolderRepository;
@@ -23,7 +24,7 @@ public class FileFolderService implements FolderService {
   @Override
   public List<Folder> getFoldersByUsername(String username) {
     return StreamSupport.stream(folderRepository.getAllByCreatedBy_Username(username).spliterator(), false)
-      .collect(Collectors.toList());
+        .collect(Collectors.toList());
   }
 
   @Transactional(readOnly = true)
@@ -42,7 +43,27 @@ public class FileFolderService implements FolderService {
   @Transactional(readOnly = true)
   @Override
   public List<Folder> getAllByFolderFatherIdAndUsername(Long id, String username) {
-    if(id == 0 ) id = ROOT_FOLDER_ID;
+    if (id == 0)
+      id = ROOT_FOLDER_ID;
     return folderRepository.findByFolderFather_idAndCreatedBy_Username(id, username);
   }
+
+  @Transactional
+  @Override
+  public Folder save(Folder folder) {
+    return folderRepository.save(folder);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public Optional<Folder> getFolderById(Long id) {
+    return folderRepository.findById(id);
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public Folder getRootFolder() {
+    return folderRepository.findById(ROOT_FOLDER_ID).get();
+  }
+
 }

@@ -22,11 +22,11 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name="folders")
+@Table(name = "folders")
 public class Folder {
 
   @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @NotEmpty
   private String name;
@@ -38,16 +38,16 @@ public class Folder {
   private Long folderFatherId;
 
   @ManyToOne
-  @JoinColumn(name = "folder_father_id", referencedColumnName = "id", insertable = false, updatable = false)
-  @JsonIgnoreProperties(value={"folders", "folderFather", "createdBy"})
+  @JoinColumn(name = "folder_father_id", referencedColumnName = "id", insertable = true, updatable = true)
+  @JsonIgnoreProperties(value = { "folders", "folderFather", "createdBy" })
   private Folder folderFather;
 
   @OneToMany(mappedBy = "folderFather", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonIgnoreProperties(value = {"folders", "folderFather", "createdBy"})
+  @JsonIgnoreProperties(value = { "folders", "folderFather", "createdBy" })
   private List<Folder> folders;
 
   private String description;
-  
+
   @ManyToOne
   @JoinColumn(name = "created_by", referencedColumnName = "username")
   @JsonIgnoreProperties("roles")
@@ -59,18 +59,21 @@ public class Folder {
 
   @PrePersist
   public void prePersist() {
-    if(this.folderFather == null) return;
-    if(this.folderFather.folderFather == null){
+    if (this.folderFather == null)
+      return;
+    if (this.folderFather.folderFather == null) {
       this.pathOfIds = this.folderFather.getId() + "";
     } else {
       this.pathOfIds = String.format("%s/%d", this.folderFather.getPathOfIds(), this.folderFather.getId());
     }
   }
+
   @PostLoad
-  public void postLoad(){
-    if(this.folderFather == null) return;
+  public void postLoad() {
+    if (this.folderFather == null)
+      return;
     this.folderFatherId = this.folderFather.getId();
-    if(this.folderFather.folderFather == null){
+    if (this.folderFather.folderFather == null) {
       this.pathOfIds = this.folderFather.getId() + "";
     } else {
       this.pathOfIds = String.format("%s/%d", this.folderFather.getPathOfIds(), this.folderFather.getId());
@@ -164,8 +167,5 @@ public class Folder {
   public void setDeletedAt(Date deletedAt) {
     this.deletedAt = deletedAt;
   }
-
-
-  
 
 }
