@@ -6,9 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -24,98 +26,107 @@ public class FileExplorerRepository {
   private String relativePath;
   private final String DEFAULT_RELATIVE_PATH = "/uploaded-files";
 
-  //Get current working directory as root /
+  // Get current working directory as root /
   String currentWorkingDirectory = System.getProperty("user.dir");
-  //Get the user directory as root
+  // Get the user directory as root
   String userHome = System.getProperty("user.home");
 
-  public File saveMultipartFileToAbsolutePathAndName(MultipartFile multiparFile, String absoluteDirectoryPath, String fileName) {
+  public File saveMultipartFileToAbsolutePathAndName(MultipartFile multipartFile, String absoluteDirectoryPath,
+      String fileName) {
     if (!absoluteDirectoryPath.endsWith(File.separator)) {
       absoluteDirectoryPath = absoluteDirectoryPath + File.separator;
     }
-    
+
     String fullPathFile = absoluteDirectoryPath + fileName;
     File fileInSystem = new File(fullPathFile);
-    if(fileInSystem.exists()){
+    if (fileInSystem.exists()) {
       throw new FileExistsException();
     }
     try {
       fileInSystem.getParentFile().mkdirs(); // this will create the necessary directories
-      multiparFile.transferTo(fileInSystem);
+      multipartFile.transferTo(fileInSystem);
     } catch (IllegalStateException | IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      if(fileInSystem.exists() && fileInSystem.delete()){
+      if (fileInSystem.exists() && fileInSystem.delete()) {
         fileInSystem = null;
       }
     }
     return fileInSystem;
   }
 
-  public File saveMultipartFileToAbsolutePath(MultipartFile multiparFile, String absolutePath, String extension){
-    String originalFilename = multiparFile.getOriginalFilename();
-    if(originalFilename == null || originalFilename.isEmpty()) {
+  public File saveMultipartFileToAbsolutePath(MultipartFile multipartFile, String absolutePath, String extension) {
+    String originalFilename = multipartFile.getOriginalFilename();
+    if (originalFilename == null || originalFilename.isEmpty()) {
       String prefix = "file";
       String timestamp = new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date());
       int randomNumber = new Random().nextInt(1000); // Adjust range based on your needs
       String filename = prefix + "_" + timestamp + "_" + randomNumber + "." + extension;
       originalFilename = filename;
     }
-    return saveMultipartFileToAbsolutePathAndName(multiparFile, absolutePath, originalFilename);
+    return saveMultipartFileToAbsolutePathAndName(multipartFile, absolutePath, originalFilename);
   }
-  public File saveMultipartFileToAbsolutePath(MultipartFile multiparFile, String absolutePath){
-    return saveMultipartFileToAbsolutePath(multiparFile, absolutePath, "txt");
+
+  public File saveMultipartFileToAbsolutePath(MultipartFile multipartFile, String absolutePath) {
+    return saveMultipartFileToAbsolutePath(multipartFile, absolutePath, "txt");
   }
 
   /*
-   * This will make the file saved in a directory called "others" instead of the username
+   * This will make the file saved in a directory called "others" instead of the
+   * username
    */
-  public File saveMultipartFile(MultipartFile multiparFile){
-    return saveMultipartFile(multiparFile, null);
+  public File saveMultipartFile(MultipartFile multipartFile) {
+    return saveMultipartFile(multipartFile, multipartFile.getOriginalFilename(), null);
   }
 
   /*
    * This will save the file into a directory of the username
    */
-  public File saveMultipartFile(MultipartFile multiparFile, String usernameOwner){
-   
 
-    String fullPathDirectory = fullDirectoryPath(usernameOwner);
-    String originalFilename = multiparFile.getOriginalFilename();
-    // System.out.println("fullPathDirectory ===>  "+ fullPathDirectory);
-    // System.out.println("originalFilename  ===>  "+ originalFilename);
-    // System.out.println("currentWorkingDirectory  ===>  "+ currentWorkingDirectory);
-    // System.out.println("userHome  ===>  "+ userHome);
+  public File saveMultipartFile(MultipartFile multipartFile, String fileName, String relativePath) {
+
+    String originalFilename = fileName;
+    String fullPathDirectory = fullDirectoryPath(relativePath);
+
+    if (originalFilename == null || originalFilename.isEmpty()) {
+      String name = multipartFile.getOriginalFilename();
+      if (name == null || name.isEmpty()) {
+        name = "keep.keep";
+      }
+      String extension = name.substring(multipartFile.getName().lastIndexOf(".") + 1);
+      originalFilename = UUID.randomUUID().toString() + "." + extension;
+    }
+
     File fileSaved = null;
-    if(originalFilename == null || originalFilename.isBlank()){
-      fileSaved = saveMultipartFileToAbsolutePath(multiparFile,fullPathDirectory);
+    if (originalFilename == null || originalFilename.isBlank()) {
+      fileSaved = saveMultipartFileToAbsolutePath(multipartFile, fullPathDirectory);
     } else {
-      fileSaved = saveMultipartFileToAbsolutePathAndName(multiparFile,fullPathDirectory, originalFilename);
+      fileSaved = saveMultipartFileToAbsolutePathAndName(multipartFile, fullPathDirectory, originalFilename);
     }
 
     return fileSaved;
   }
 
-  public String fullDirectoryPath(String usernameOwner) {
+  public String fullDirectoryPath(String relativePathInput) {
     String baseFilePath = "";
     String relativePath = "";
 
-    if(this.baseFilePath != null && !this.baseFilePath.isEmpty()){
+    if (this.baseFilePath != null && !this.baseFilePath.isEmpty()) {
       baseFilePath = this.baseFilePath;
     }
-    if(this.relativePath != null && !this.relativePath.isEmpty()){
+    if (this.relativePath != null && !this.relativePath.isEmpty()) {
       relativePath = this.relativePath;
     }
 
-    if(baseFilePath.isBlank()){
+    if (baseFilePath.isBlank()) {
       baseFilePath = this.userHome;
     }
-    if(relativePath.isBlank()){
+    if (relativePath.isBlank()) {
       relativePath = DEFAULT_RELATIVE_PATH;
     }
-    if(usernameOwner != null && !usernameOwner.isBlank()){
-      relativePath = relativePath.concat(File.separator).concat(usernameOwner);
-    }else {
+    if (relativePathInput != null && !relativePathInput.isBlank()) {
+      relativePath = relativePath.concat(File.separator).concat(relativePathInput);
+    } else {
       relativePath = relativePath.concat(File.separator).concat("others");
     }
 
@@ -125,12 +136,37 @@ public class FileExplorerRepository {
   public String changeUserDirectoryName(String currentUsername, String newUsername) throws IOException {
     String currentUserDirectoryPath = fullDirectoryPath(currentUsername);
     String newtUserDirectoryPath = fullDirectoryPath(newUsername);
-    
+
     Path sourceDirectory = Paths.get(currentUserDirectoryPath);
     Path targetDirectory = Paths.get(newtUserDirectoryPath);
 
     Path movedDirectory = Files.move(sourceDirectory, targetDirectory, StandardCopyOption.REPLACE_EXISTING);
 
     return movedDirectory.toAbsolutePath().toString();
+  }
+
+  public String sanitizeFileName(String fileName) {
+    // Normalize to ensure consistent Unicode representation
+    String sanitized = Normalizer.normalize(fileName, Normalizer.Form.NFC);
+
+    // Remove invalid characters for file systems
+    sanitized = sanitized.replaceAll("[<>:\"/\\\\|?*]", "");
+
+    // Trim leading/trailing whitespace
+    sanitized = sanitized.trim();
+
+    // Replace spaces with underscores
+    sanitized = sanitized.replaceAll("\\s+", "-");
+
+    // Ensure the file name is not too long (255 characters max)
+    if (sanitized.length() > 255) {
+      sanitized = sanitized.substring(0, 255);
+    }
+
+    if (sanitized.isEmpty()) {
+      sanitized = "keep2.keep2";
+    }
+
+    return sanitized;
   }
 }

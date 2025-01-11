@@ -9,14 +9,18 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
 
 import com.buscacode.admin.buscacodeadmin.entities.Role;
 import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.events.UserCreatedEvent;
 import com.buscacode.admin.buscacodeadmin.repositories.RoleRepository;
 import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
+import com.buscacode.admin.buscacodeadmin.security.model.UserDetail;
 import com.buscacode.admin.buscacodeadmin.services.interfaces.CredentialService;
 import com.buscacode.admin.buscacodeadmin.services.interfaces.Service;
 
@@ -92,5 +96,19 @@ public class UserService implements CredentialService {
 
   public boolean existByUsername(String username) {
     return repository.existsByUsername(username);
+  }
+
+  @Override
+  public User getAuthenticatedUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      Boolean isAuthenticated = authentication.getDetails() instanceof User;
+      System.out.println("isAuthenticated: " + isAuthenticated);
+      if (authentication.getDetails() instanceof User) {
+        User loggedUser = (User) authentication.getDetails();
+        return loggedUser;
+      }
+    }
+    throw new IllegalStateException("User is not authenticated");
   }
 }

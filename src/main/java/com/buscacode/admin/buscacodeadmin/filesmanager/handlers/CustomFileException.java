@@ -16,19 +16,19 @@ public class CustomFileException {
 
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   public ResponseEntity<Map<String, String>> handleMaxSizeException(MaxUploadSizeExceededException exc) {
-      
-      Map<String, String> errorResponse = new HashMap<>();
-      errorResponse.put("error", "File size exceeds the maximum limit allowed.");
 
-      return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(errorResponse);
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "File size exceeds the maximum limit allowed.");
+
+    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(errorResponse);
   }
-  
+
   @ExceptionHandler(FileExistsException.class)
   public ResponseEntity<Map<String, String>> handleMaxSizeException(FileExistsException exc) {
-      
-      Map<String, String> errorResponse = new HashMap<>();
-      errorResponse.put("error", "File already exists.");
 
-      return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(errorResponse);
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("error", "File already exists.");
+
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 }

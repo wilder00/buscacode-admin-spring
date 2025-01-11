@@ -2,6 +2,7 @@ CREATE TABLE files (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   original_name VARCHAR(255),
+  saved_name VARCHAR(255),
   path VARCHAR(255),
   absolute_path VARCHAR(255),
   extension VARCHAR(10),

@@ -11,14 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.buscacode.admin.buscacodeadmin.entities.Product;
 import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.buscacode.admin.buscacodeadmin.filesmanager.dto.FolderCreateDTO;
 import com.buscacode.admin.buscacodeadmin.filesmanager.entities.Folder;
 import com.buscacode.admin.buscacodeadmin.filesmanager.repositories.FolderRepository;
+import com.buscacode.admin.buscacodeadmin.services.UserService;
 
 @Service
 public class FileFolderService implements FolderService {
   private final Long ROOT_FOLDER_ID = 1L;
   @Autowired
   private FolderRepository folderRepository;
+  @Autowired
+  private UserService userService;
 
   @Transactional(readOnly = true)
   @Override
@@ -64,6 +68,23 @@ public class FileFolderService implements FolderService {
   @Override
   public Folder getRootFolder() {
     return folderRepository.findById(ROOT_FOLDER_ID).get();
+  }
+
+  @Transactional
+  @Override
+  public Folder createUserFolder(Long id, FolderCreateDTO folderCreateDTO) {
+    User user = userService.getAuthenticatedUser();
+
+    Folder folderFather = findFolderByIdAndUsername(id, user.getUsername()).get();
+
+    Folder folder = new Folder();
+    folder.setName(folderCreateDTO.getName());
+    folder.setDescription(folderCreateDTO.getDescription());
+    folder.setFolderFather(folderFather);
+    folder.setCreatedBy(user);
+    folder.setCreatedAt(new java.util.Date());
+    return folderRepository.save(folder);
+
   }
 
 }

@@ -34,7 +34,7 @@ import com.buscacode.admin.buscacodeadmin.services.UserService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value="/file-items")
+@RequestMapping(value = "/file-items")
 public class FileItemController {
 
   @Autowired
@@ -45,35 +45,37 @@ public class FileItemController {
   private UserService userService;
 
   @GetMapping
-  public List<File> getFileItems(){
+  public List<File> getFileItems() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
     return fileService.getAllByUsername(loggedUsername);
   }
 
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-  public ResponseEntity<?> insertFile(@Valid @ModelAttribute File file, BindingResult result) throws IllegalStateException, IOException{
-    if(result.hasFieldErrors()) {
+  public ResponseEntity<?> insertFile(@Valid @ModelAttribute File file, BindingResult result)
+      throws IllegalStateException, IOException {
+    if (result.hasFieldErrors()) {
       ResponseValidationMessage validator = ResponseValidationMessage.INSTANCE;
       return validator.validation(result);
     }
-    Map<String,String> body = new HashMap<>();
+    Map<String, String> body = new HashMap<>();
 
     if (file == null || file.getFile() == null) {
-      body.put("error", "File cannot be null");
+      body.put("message", "File cannot be null");
       return ResponseEntity.badRequest().body(body);
     }
-    System.out.println("SHOUL not  BE HEERE in save post");
+
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
     Optional<User> optionalUser = userService.findByUsername(loggedUsername);
-    if(optionalUser.isPresent()){
+    if (optionalUser.isPresent()) {
       file.setCreatedBy(optionalUser.get());
     }
+
     File newFile = fileService.save(file);
 
     if (newFile == null) {
-      body.put("error", "No se ha creado el file.");
+      body.put("message", "No se ha creado el file.");
       return ResponseEntity.internalServerError().body(body);
     }
 

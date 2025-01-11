@@ -8,9 +8,14 @@ import com.buscacode.admin.buscacodeadmin.entities.User;
 
 public interface CredentialService {
   List<User> findAll();
+
   Optional<User> findById(UUID id);
+
   User save(User recurso);
-  Optional<User> update(UUID id,  User recurso);
+
+  Optional<User> update(UUID id, User recurso);
+
   Optional<User> delete(User recurso);
 
+  User getAuthenticatedUser();
 }

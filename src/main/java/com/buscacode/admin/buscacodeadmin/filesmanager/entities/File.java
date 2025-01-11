@@ -2,6 +2,8 @@ package com.buscacode.admin.buscacodeadmin.filesmanager.entities;
 
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +21,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 @Entity
@@ -31,6 +36,8 @@ public class File {
   private String name;
   // @NotEmpty
   private String originalName;
+  @JsonIgnore
+  private String savedName;
   private String Path;
   @JsonIgnore
   private String absolutePath;
@@ -41,7 +48,7 @@ public class File {
 
   // private Long folderId;
   @ManyToOne(cascade = CascadeType.MERGE)
-  @JoinColumn(name = "folder_id", referencedColumnName = "id", insertable = false, updatable = false)
+  @JoinColumn(name = "folder_id", referencedColumnName = "id", insertable = true, updatable = true)
   @JsonIgnoreProperties(value = { "folders", "folderFather", "createdBy" })
   private Folder folder;
 
@@ -49,7 +56,15 @@ public class File {
   @JoinColumn(name = "created_by", referencedColumnName = "username")
   @JsonIgnoreProperties("roles")
   private User createdBy;
+
+  @CreationTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "created_at", updatable = false)
   private Date createdAt;
+
+  @UpdateTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "updated_at")
   private Date updatedAt;
   private Date deletedAt;
 
@@ -176,4 +191,13 @@ public class File {
   public void setFile(MultipartFile document) {
     this.file = document;
   }
+
+  public String getSavedName() {
+    return savedName;
+  }
+
+  public void setSavedName(String savedName) {
+    this.savedName = savedName;
+  }
+
 }

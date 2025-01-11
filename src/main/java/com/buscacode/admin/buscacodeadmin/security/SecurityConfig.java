@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.Ordered;
@@ -24,11 +25,15 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
 import com.buscacode.admin.buscacodeadmin.security.filter.JwtAuthenticationFilter;
 import com.buscacode.admin.buscacodeadmin.security.filter.JwtValidationFilter;
+import com.buscacode.admin.buscacodeadmin.services.UserService;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true) // Para incluir reglas en los mismos controladores por roles, sino solo sería por aquí
+@EnableMethodSecurity(prePostEnabled = true) // Para incluir reglas en los mismos controladores por roles, sino solo
+                                             // sería por aquí
 @PropertySources({
     @PropertySource(value = "classpath:security.properties", encoding = "UTF-8"),
 })
@@ -38,6 +43,9 @@ public class SecurityConfig {
 
   @Autowired
   private AuthenticationConfiguration authenticationConfiguration;
+
+  @Autowired
+  private UserRepository userRepository;
 
   @Bean
   AuthenticationManager authenticationManager() throws Exception {
@@ -57,19 +65,27 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.authorizeHttpRequests((auths) -> auths
-      .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
-      .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-      .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
-      .requestMatchers(HttpMethod.GET, "/api/products").hasAnyRole("ADMIN", "USER")
-      .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("ADMIN")
-      .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
-      .anyRequest().authenticated())
-      .addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKey()))
-      .addFilter(new JwtValidationFilter(authenticationManager(), secretKey()))
-      .csrf(config -> config.disable()) // d
-      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-      .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // para que la sescion http no tenga estado y se maneje por tokens
-      .build();
+        .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+        .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.GET, "/api/products").hasAnyRole("ADMIN", "USER")
+        .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
+        .anyRequest().authenticated())
+        .addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKey()))
+        .addFilter(new JwtValidationFilter(authenticationManager(), secretKey(), userRepository))
+        .csrf(config -> config.disable()) // d
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // para que
+                                                                                                            // la
+                                                                                                            // sescion
+                                                                                                            // http no
+                                                                                                            // tenga
+                                                                                                            // estado y
+                                                                                                            // se maneje
+                                                                                                            // por
+                                                                                                            // tokens
+        .build();
   }
 
   @Bean

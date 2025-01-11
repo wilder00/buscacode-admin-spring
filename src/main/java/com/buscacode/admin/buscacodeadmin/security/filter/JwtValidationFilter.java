@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -20,8 +21,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
 import com.buscacode.admin.buscacodeadmin.security.SimpleGrantedAuthorityJsonCreator;
 import com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig;
+import com.buscacode.admin.buscacodeadmin.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
@@ -32,13 +36,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class JwtValidationFilter extends BasicAuthenticationFilter{
+public class JwtValidationFilter extends BasicAuthenticationFilter {
 
   private final SecretKey SECRET_KEY;
+  private UserRepository userRepository;
 
-  public JwtValidationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig) {
+  public JwtValidationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig,
+      UserRepository userRepository) {
     super(authenticationManager);
     SECRET_KEY = tokenJwtConfig.getSecretKey();
+    this.userRepository = userRepository;
   }
 
   @Override
@@ -47,7 +54,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
 
     String header = request.getHeader(HEADER_AUTHORIZATION);
 
-    if(header == null || !header.startsWith(PREFIX_TOKEN)){
+    if (header == null || !header.startsWith(PREFIX_TOKEN)) {
       chain.doFilter(request, response);
       return;
     }
@@ -55,20 +62,25 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
 
     try {
       Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
-      //String username = claims.getSubject();
+      // String username = claims.getSubject();
       String username2 = (String) claims.get("username");
+      UUID uuid = UUID.fromString((String) claims.get("id"));
       Object authoritiesClaims = claims.get("authorities");
 
       Collection<? extends GrantedAuthority> authorities = Arrays.asList(
-        new ObjectMapper()
-          .addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityJsonCreator.class)
-          .readValue(
-            authoritiesClaims.toString()
-            .getBytes(), SimpleGrantedAuthority[].class
-          )
-      );
+          new ObjectMapper()
+              .addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityJsonCreator.class)
+              .readValue(
+                  authoritiesClaims.toString()
+                      .getBytes(),
+                  SimpleGrantedAuthority[].class));
 
-      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username2, null, authorities );
+      UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username2, null,
+          authorities);
+
+      // call here the database to get all the user details
+      User user = userRepository.findById(uuid).get();
+      authenticationToken.setDetails(user);
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
       chain.doFilter(request, response);
@@ -83,6 +95,5 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
       response.setContentType(CONTENT_TYPE);
     }
   }
-
 
 }

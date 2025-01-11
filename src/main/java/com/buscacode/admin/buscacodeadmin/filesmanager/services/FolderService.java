@@ -3,6 +3,7 @@ package com.buscacode.admin.buscacodeadmin.filesmanager.services;
 import java.util.List;
 import java.util.Optional;
 
+import com.buscacode.admin.buscacodeadmin.filesmanager.dto.FolderCreateDTO;
 import com.buscacode.admin.buscacodeadmin.filesmanager.entities.Folder;
 
 public interface FolderService {
@@ -19,4 +20,6 @@ public interface FolderService {
   public Optional<Folder> getFolderById(Long id);
 
   public Folder getRootFolder();
+
+  public Folder createUserFolder(Long id, FolderCreateDTO folderCreateDTO);
 }
