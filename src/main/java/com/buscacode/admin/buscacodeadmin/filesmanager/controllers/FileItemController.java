@@ -1,6 +1,11 @@
 package com.buscacode.admin.buscacodeadmin.filesmanager.controllers;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +25,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,6 +59,29 @@ public class FileItemController {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
     return fileService.getAllByUsername(loggedUsername);
+  }
+
+  @GetMapping("/s/{fileId}")
+  public ResponseEntity<?> displayFile(@PathVariable Long fileId) throws MalformedURLException {
+    System.out.println("trying to get the file");
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String loggedUsername = authentication.getName();
+
+    Optional<File> fileOptional = fileService.findFileByIdAndUsername(fileId, loggedUsername);
+
+    if (fileOptional.isPresent()) {
+      File savedFile = fileOptional.get();
+      Path filePath = Paths.get(fileOptional.get().getAbsolutePath());
+
+      // Serve the file if it exists
+      Resource resource = new UrlResource(filePath.toUri());
+      return ResponseEntity.ok()
+          .header("Content-Disposition", "attachment; filename=\"" + resource.getFilename() + "\"")
+          .header(HttpHeaders.CONTENT_TYPE, savedFile.getTypeFile())
+          .body(resource);
+    }
+
+    return ResponseEntity.notFound().build();
   }
 
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

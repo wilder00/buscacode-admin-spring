@@ -40,6 +40,12 @@ public class FileItemService implements FileService {
         .collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
+  @Override
+  public Optional<File> findFileByIdAndUsername(Long fileId, String username) {
+    return fileRepository.findByIdAndCreatedBy_Username(fileId, username);
+  }
+
   @Transactional
   @Override
   public File save(File file) {
@@ -58,6 +64,7 @@ public class FileItemService implements FileService {
     }
 
     file.setFolder(folderOptional.get());
+    file.setTypeFile(file.getFile().getContentType());
 
     java.io.File fileInSystem = fileExplorerRepository.saveMultipartFile(file.getFile(), newName, username);
     if (fileInSystem == null)
@@ -71,9 +78,9 @@ public class FileItemService implements FileService {
     file.setAbsolutePath(fileInSystem.getAbsolutePath());
     file.setSavedName(fileInSystem.getName());
 
-    System.out.println("file => " + fileInSystem);
-
     File newFile = fileRepository.save(file);
+    newFile.setPath("/file-items/s/" + newFile.getId());
+    fileRepository.save(newFile);
     return newFile;
   }
 

@@ -33,6 +33,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -48,17 +49,37 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
     this.userRepository = userRepository;
   }
 
+  private String getTokenByCookie(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    String token = null;
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if ("token".equals(cookie.getName())) {
+          token = cookie.getValue();
+        }
+      }
+    }
+    return token;
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws IOException, ServletException {
 
     String header = request.getHeader(HEADER_AUTHORIZATION);
 
+    String token = null;
     if (header == null || !header.startsWith(PREFIX_TOKEN)) {
-      chain.doFilter(request, response);
-      return;
+      token = getTokenByCookie(request);
+      if (token == null) {
+        chain.doFilter(request, response);
+        return;
+      }
+    } else {
+      token = header.replace(PREFIX_TOKEN, "");
     }
-    String token = header.replace(PREFIX_TOKEN, "");
+
+    System.out.println("the token: " + token);
 
     try {
       Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
