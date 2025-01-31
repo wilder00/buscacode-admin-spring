@@ -1,0 +1,11 @@
+CREATE TABLE transaction_details (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  transaction_id CHAR(36) NOT NULL,
+  file_id BIGINT,
+  created_by VARCHAR(100) COMMENT 'The username of the creator',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE RESTRICT,
+  FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE SET NULL
+);

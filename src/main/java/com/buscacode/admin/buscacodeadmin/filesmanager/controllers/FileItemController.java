@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -63,7 +65,6 @@ public class FileItemController {
 
   @GetMapping("/s/{fileId}")
   public ResponseEntity<?> displayFile(@PathVariable Long fileId) throws MalformedURLException {
-    System.out.println("trying to get the file");
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String loggedUsername = authentication.getName();
 
@@ -76,12 +77,36 @@ public class FileItemController {
       // Serve the file if it exists
       Resource resource = new UrlResource(filePath.toUri());
       return ResponseEntity.ok()
-          .header("Content-Disposition", "attachment; filename=\"" + resource.getFilename() + "\"")
+          // .header("Content-Disposition", "attachment; filename=\"" +
+          // resource.getFilename() + "\"")
+          /*
+           * .header("Content-Disposition", "inline; filename=\"" +
+           * savedFile.getOriginalName() + "\"")
+           */
+          .header("Content-Disposition", "inline; filename=\"" +
+              URLEncoder.encode(savedFile.getOriginalName(), StandardCharsets.UTF_8).replace("+", " ")
+              + "\"; filename*=UTF-8''" +
+              URLEncoder.encode(savedFile.getOriginalName(), StandardCharsets.UTF_8))
           .header(HttpHeaders.CONTENT_TYPE, savedFile.getTypeFile())
           .body(resource);
     }
 
     return ResponseEntity.notFound().build();
+  }
+
+  @GetMapping("/{fileId}")
+  public ResponseEntity<?> getFileById(@PathVariable Long fileId) throws MalformedURLException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String loggedUsername = authentication.getName();
+
+    Optional<File> fileOptional = fileService.findFileByIdAndUsername(fileId, loggedUsername);
+
+    if (!fileOptional.isPresent()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    return ResponseEntity.ok()
+        .body(fileOptional.get());
   }
 
   @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

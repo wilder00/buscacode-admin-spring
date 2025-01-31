@@ -1,0 +1,12 @@
+CREATE TABLE transactions (
+  id CHAR(36) NOT NULL PRIMARY KEY,
+  name VARCHAR(255),
+  type ENUM('INFLOW', 'OUTFLOW') NOT NULL DEFAULT 'OUTFLOW',
+  amount DECIMAL(10, 2) NOT NULL,
+  account_id CHAR(36) NOT NULL,
+  created_by VARCHAR(100) COMMENT 'The username of the creator',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE RESTRICT
+);

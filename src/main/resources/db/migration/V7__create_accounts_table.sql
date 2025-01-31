@@ -1,0 +1,13 @@
+CREATE TABLE accounts (
+  id CHAR(36) NOT NULL PRIMARY KEY,
+  name VARCHAR(255),
+  current_balance DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  closed_at TIMESTAMP NULL,
+  state ENUM('ACTIVE', 'CLOSED') NOT NULL DEFAULT 'ACTIVE',
+  owner_id BINARY(16) NOT NULL,
+  created_by VARCHAR(100) COMMENT 'The username of the creator',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP NULL,
+  FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT
+);
