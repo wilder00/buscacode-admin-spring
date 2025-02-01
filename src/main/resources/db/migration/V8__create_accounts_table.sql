@@ -5,9 +5,11 @@ CREATE TABLE accounts (
   closed_at TIMESTAMP NULL,
   state ENUM('ACTIVE', 'CLOSED') NOT NULL DEFAULT 'ACTIVE',
   owner_id BINARY(16) NOT NULL,
+  currency_id BIGINT NOT NULL,
   created_by VARCHAR(100) COMMENT 'The username of the creator',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL,
-  FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT
+  FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT,
+  FOREIGN KEY (currency_id) REFERENCES currencies(id) ON DELETE RESTRICT
 );
