@@ -30,6 +30,7 @@ import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
 import com.buscacode.admin.buscacodeadmin.security.filter.JwtAuthenticationFilter;
 import com.buscacode.admin.buscacodeadmin.security.filter.JwtValidationFilter;
+import com.buscacode.admin.buscacodeadmin.services.UserLoggedService;
 import com.buscacode.admin.buscacodeadmin.services.UserService;
 
 @Configuration
@@ -46,7 +47,7 @@ public class SecurityConfig {
   private AuthenticationConfiguration authenticationConfiguration;
 
   @Autowired
-  private UserRepository userRepository;
+  private UserLoggedService userLoggedService;
 
   @Bean
   AuthenticationManager authenticationManager() throws Exception {
@@ -67,6 +68,7 @@ public class SecurityConfig {
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.authorizeHttpRequests((auths) -> auths
         .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
+        .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
         .requestMatchers(HttpMethod.GET, "/api/products").hasAnyRole("ADMIN", "USER")
@@ -74,7 +76,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
         .anyRequest().authenticated())
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKey()))
-        .addFilter(new JwtValidationFilter(authenticationManager(), secretKey(), userRepository))
+        .addFilter(new JwtValidationFilter(authenticationManager(), secretKey(), userLoggedService))
         .csrf(config -> config.disable()) // d
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
         .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // para que
@@ -92,7 +94,8 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "https://wildertrujillo.com"));
+    config.setAllowedOriginPatterns(
+        Arrays.asList("http://127.0.0.1:*", "http://localhost:*", "https://wildertrujillo.com"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
     config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
     config.setAllowCredentials(true);

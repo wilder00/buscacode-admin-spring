@@ -13,7 +13,8 @@
     "Jwts",
     "lastname",
     "Lastname",
-    "nullable"
+    "nullable",
+    "springframework"
   ],
   "java.compile.nullAnalysis.mode": "automatic"
 }

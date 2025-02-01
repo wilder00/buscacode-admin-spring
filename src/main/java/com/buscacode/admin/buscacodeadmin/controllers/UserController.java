@@ -49,10 +49,15 @@ public class UserController {
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<?> showUser(@PathVariable UUID id) {
     Optional<User> userOptional = service.findById(id);
-    if(userOptional.isPresent()) {
+    if (userOptional.isPresent()) {
       return ResponseEntity.ok(userOptional.orElseThrow());
     }
     return ResponseEntity.notFound().build();
+  }
+
+  @GetMapping("/me")
+  public User showAuthenticatedUser() {
+    return service.getAuthenticatedUser();
   }
 
   @PostMapping("/register")

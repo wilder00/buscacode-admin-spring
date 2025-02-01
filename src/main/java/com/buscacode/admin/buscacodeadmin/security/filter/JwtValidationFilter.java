@@ -9,10 +9,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
+import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +27,7 @@ import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.repositories.UserRepository;
 import com.buscacode.admin.buscacodeadmin.security.SimpleGrantedAuthorityJsonCreator;
 import com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig;
+import com.buscacode.admin.buscacodeadmin.services.UserLoggedService;
 import com.buscacode.admin.buscacodeadmin.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,13 +43,13 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtValidationFilter extends BasicAuthenticationFilter {
 
   private final SecretKey SECRET_KEY;
-  private UserRepository userRepository;
+  private UserLoggedService userLoggedService;
 
   public JwtValidationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig,
-      UserRepository userRepository) {
+      UserLoggedService userLoggedService) {
     super(authenticationManager);
     SECRET_KEY = tokenJwtConfig.getSecretKey();
-    this.userRepository = userRepository;
+    this.userLoggedService = userLoggedService;
   }
 
   private String getTokenByCookie(HttpServletRequest request) {
@@ -100,7 +103,12 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
           authorities);
 
       // call here the database to get all the user details
-      User user = userRepository.findById(uuid).get();
+      Optional<User> userOptional = userLoggedService.findById(uuid);
+      // .orElseThrow(() -> new JwtException("User not found"));
+      if (userOptional.isEmpty()) {
+        throw new JwtException("User not found");
+      }
+      User user = userOptional.get();
       authenticationToken.setDetails(user);
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
@@ -111,9 +119,9 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
       body.put("error", e.getMessage());
       body.put("message", "El token JWT es inválido!");
 
-      response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-      response.setStatus(HttpStatus.UNAUTHORIZED.value());
       response.setContentType(CONTENT_TYPE);
+      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+      response.getWriter().write(new ObjectMapper().writeValueAsString(body));
     }
   }
 
