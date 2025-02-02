@@ -2,7 +2,6 @@ CREATE TABLE transaction_details (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   transaction_id CHAR(36) NOT NULL,
   file_id BIGINT,
-  created_by VARCHAR(100) COMMENT 'The username of the creator',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP NULL,
