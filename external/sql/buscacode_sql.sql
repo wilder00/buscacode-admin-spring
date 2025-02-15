@@ -1,11 +1,16 @@
-flyway_schema_historySELECT * FROM buscacode_admin.users;
+USE buscacode_admin;
+
+flyway_schema_history SELECT * FROM buscacode_admin.users;
+
 
 SELECT * FROM buscacode_admin.galleries;
 
 SELECT * FROM buscacode_admin.folders;
 
+
+
 DROP database buscacode_admin;
-CREATE DATABASE buscacode_currenciesadmin;
+CREATE DATABASE buscacode_admin;
 
 use buscacode_admin;
 
@@ -48,3 +53,4 @@ DELETE FROM transactions WHERE id = "def67cc9-df99-11ef-ba08-0242ac120002";
 
 SELECT * FROM transactions ORDER BY created_at desc;
 SELECT * FROM accounts;
+

@@ -49,6 +49,10 @@ public class Transaction {
   @JsonIgnoreProperties(value = { "createdBy" })
   private Account account;
 
+  @OneToOne(mappedBy = "transaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JsonIgnoreProperties(value = { "transaction", "createdBy" })
+  private TransactionDetail transactionDetail;
+
   @ManyToOne(cascade = CascadeType.MERGE)
   @JoinColumn(name = "created_by", referencedColumnName = "username")
   @JsonIgnoreProperties(value = { "roles", "email", "isAdmin" })
@@ -64,10 +68,6 @@ public class Transaction {
   @Column(name = "deleted_at", insertable = false, updatable = true)
   @JsonIgnore
   private Date deletedAt;
-
-  @OneToOne(mappedBy = "transaction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JsonIgnoreProperties(value = { "transaction", "createdBy" })
-  private TransactionDetail transactionDetail;
 
   public String getId() {
     return id;

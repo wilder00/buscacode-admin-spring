@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buscacode.admin.buscacodeadmin.modules.filesmanager.utils.ResponseValidationMessage;
 import com.buscacode.admin.buscacodeadmin.modules.finances.entities.Account;
+import com.buscacode.admin.buscacodeadmin.modules.finances.entities.Transaction;
 import com.buscacode.admin.buscacodeadmin.modules.finances.entities.dto.AccountDTO;
 import com.buscacode.admin.buscacodeadmin.modules.finances.services.AccountService;
+import com.buscacode.admin.buscacodeadmin.modules.finances.services.TransactionService;
 
 import jakarta.validation.Valid;
 
@@ -19,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -29,9 +32,17 @@ public class AccountController {
   @Autowired
   private AccountService accountService;
 
+  @Autowired
+  private TransactionService transactionService;
+
   @GetMapping
   public List<Account> getMyAccounts() {
     return accountService.getMyAccounts();
+  }
+
+  @GetMapping("/{accountId}/transactions")
+  public List<Transaction> getAccountTransactions(@PathVariable String accountId) {
+    return transactionService.getMyTransactionsByAccountId(accountId);
   }
 
   @PostMapping

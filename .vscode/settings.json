@@ -14,7 +14,9 @@
     "lastname",
     "Lastname",
     "nullable",
-    "springframework"
+    "springframework",
+    "SUBSELECT",
+    "tabacco"
   ],
   "java.compile.nullAnalysis.mode": "automatic"
 }

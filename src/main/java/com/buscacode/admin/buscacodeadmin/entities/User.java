@@ -33,7 +33,7 @@ public class User {
 
   /*
    * @Id
-   * 
+   *
    * @GeneratedValue(strategy = GenerationType.IDENTITY)
    * private Long id;
    */
@@ -77,12 +77,12 @@ public class User {
 
   /*
    * @CreationTimestamp
-   * 
+   *
    * @Column(updatable = false, name = "created_at")
    * private Date createdAt;
-   * 
+   *
    * @UpdateTimestamp
-   * 
+   *
    * @Column(name = "updated_at")
    * private Date updatedAt;
    */

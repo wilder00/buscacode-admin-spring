@@ -1,7 +1,7 @@
 CREATE TABLE transactions (
   id CHAR(36) NOT NULL PRIMARY KEY,
   name VARCHAR(255),
-  type ENUM('INFLOW', 'OUTFLOW') NOT NULL DEFAULT 'OUTFLOW',
+  type ENUM('INCOME', 'EXPENSE') NOT NULL DEFAULT 'EXPENSE',
   amount DECIMAL(10, 2) NOT NULL,
   account_id CHAR(36) NOT NULL,
   created_by VARCHAR(100) COMMENT 'The username of the creator',

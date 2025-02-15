@@ -9,5 +9,7 @@ public interface TransactionService {
 
   public List<Transaction> getMyTransactions();
 
+  public List<Transaction> getMyTransactionsByAccountId(String accountId);
+
   public Transaction CreateMyTransaction(TransactionDTO transactionBody);
 }

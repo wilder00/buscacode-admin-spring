@@ -66,6 +66,9 @@ public class File {
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "updated_at")
   private Date updatedAt;
+
+  @Column(name = "deleted_at", insertable = false, updatable = true)
+  @JsonIgnore
   private Date deletedAt;
 
   @Transient

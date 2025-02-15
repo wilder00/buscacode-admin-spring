@@ -5,11 +5,11 @@ CREATE TRIGGER after_transaction_insert
 AFTER INSERT ON transactions
 FOR EACH ROW
 BEGIN
-    IF NEW.type = 'INFLOW' THEN
+    IF NEW.type = 'INCOME' THEN
         UPDATE accounts
         SET current_balance = current_balance + NEW.amount
         WHERE id = NEW.account_id;
-    ELSEIF NEW.type = 'OUTFLOW' THEN
+    ELSEIF NEW.type = 'EXPENSE' THEN
         UPDATE accounts
         SET current_balance = current_balance - NEW.amount
         WHERE id = NEW.account_id;
@@ -28,11 +28,11 @@ AFTER DELETE ON transactions
 FOR EACH ROW
 BEGIN
     -- Reverse the transaction effect on account balance
-    IF OLD.type = 'inflow' THEN
+    IF OLD.type = 'INCOME' THEN
         UPDATE accounts
         SET current_balance = current_balance - OLD.amount
         WHERE id = OLD.account_id;
-    ELSEIF OLD.type = 'outflow' THEN
+    ELSEIF OLD.type = 'EXPENSE' THEN
         UPDATE accounts
         SET current_balance = current_balance + OLD.amount
         WHERE id = OLD.account_id;

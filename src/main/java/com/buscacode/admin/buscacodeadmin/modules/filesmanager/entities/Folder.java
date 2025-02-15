@@ -4,10 +4,12 @@ import java.util.Date;
 import java.util.List;
 
 import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -53,8 +55,15 @@ public class Folder {
   @JsonIgnoreProperties("roles")
   private User createdBy;
 
+  @Column(name = "created_at", insertable = false, updatable = false)
   private Date createdAt;
+
+  @Column(name = "updated_at", insertable = false, updatable = false)
+  @JsonIgnore
   private Date updatedAt;
+
+  @Column(name = "deleted_at", insertable = false, updatable = true)
+  @JsonIgnore
   private Date deletedAt;
 
   @PrePersist

@@ -11,11 +11,13 @@ import com.buscacode.admin.buscacodeadmin.entities.User;
 import com.buscacode.admin.buscacodeadmin.modules.filesmanager.entities.File;
 import com.buscacode.admin.buscacodeadmin.modules.filesmanager.repositories.FileRepository;
 import com.buscacode.admin.buscacodeadmin.modules.finances.entities.Account;
+import com.buscacode.admin.buscacodeadmin.modules.finances.entities.CashFlowCategory;
 import com.buscacode.admin.buscacodeadmin.modules.finances.entities.Transaction;
 import com.buscacode.admin.buscacodeadmin.modules.finances.entities.TransactionDetail;
 import com.buscacode.admin.buscacodeadmin.modules.finances.entities.dto.TransactionDTO;
 import com.buscacode.admin.buscacodeadmin.modules.finances.enums.TransactionType;
 import com.buscacode.admin.buscacodeadmin.modules.finances.repositories.AccountRepository;
+import com.buscacode.admin.buscacodeadmin.modules.finances.repositories.CashFlowCategoryRepository;
 import com.buscacode.admin.buscacodeadmin.modules.finances.repositories.TransactionDetailRepository;
 import com.buscacode.admin.buscacodeadmin.modules.finances.repositories.TransactionRepository;
 import com.buscacode.admin.buscacodeadmin.services.UserService;
@@ -24,6 +26,8 @@ import com.buscacode.admin.buscacodeadmin.services.UserService;
 public class TransactionProvider implements TransactionService {
   @Autowired
   private TransactionRepository transactionRepository;
+  @Autowired
+  private CashFlowCategoryRepository cashFlowCategoryRepository;
   @Autowired
   private TransactionDetailRepository transactionDetailRepository;
   @Autowired
@@ -38,6 +42,14 @@ public class TransactionProvider implements TransactionService {
   public List<Transaction> getMyTransactions() {
     User loggedUser = userService.getAuthenticatedUser();
     return transactionRepository.getAllByCreatedBy_Username(loggedUser.getUsername());
+  }
+
+  @Transactional(readOnly = true)
+  @Override
+  public List<Transaction> getMyTransactionsByAccountId(String accountId) {
+    User loggedUser = userService.getAuthenticatedUser();
+    return transactionRepository.getAllByAccount_idAndCreatedBy_UsernameOrderByCreatedAtDesc(accountId,
+        loggedUser.getUsername());
   }
 
   @Transactional
@@ -70,6 +82,12 @@ public class TransactionProvider implements TransactionService {
       }
     }
 
+    CashFlowCategory cashFlowCategory = null;
+    if (transactionBody.getCashFlowCategoryId() != null) {
+      cashFlowCategory = cashFlowCategoryRepository.findById(transactionBody.getCashFlowCategoryId())
+          .orElse(null);
+    }
+    detail.setCashFlowCategory(cashFlowCategory);
     detail = transactionDetailRepository.save(detail);
     transaction.setTransactionDetail(detail);
 

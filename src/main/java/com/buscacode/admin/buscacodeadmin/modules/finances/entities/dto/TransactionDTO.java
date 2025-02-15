@@ -21,6 +21,7 @@ public class TransactionDTO {
   private String accountId;
 
   private Long fileId;
+  private Long cashFlowCategoryId;
 
   public String getName() {
     return name;
@@ -60,6 +61,14 @@ public class TransactionDTO {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public Long getCashFlowCategoryId() {
+    return cashFlowCategoryId;
+  }
+
+  public void setCashFlowCategoryId(Long cashFlowCategoryId) {
+    this.cashFlowCategoryId = cashFlowCategoryId;
   }
 
 }

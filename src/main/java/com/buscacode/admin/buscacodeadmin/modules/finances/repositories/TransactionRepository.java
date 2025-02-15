@@ -9,5 +9,10 @@ import com.buscacode.admin.buscacodeadmin.modules.finances.entities.Transaction;
 public interface TransactionRepository extends CrudRepository<Transaction, String> {
   public List<Transaction> getAllByCreatedBy_Username(String username);
 
+  public List<Transaction> getAllByAccount_idAndCreatedBy_UsernameOrderByCreatedAtDesc(String accountId,
+      String username);
+
+  public List<Transaction> getAllByAccount_idAndCreatedBy_Username(String accountId, String username);
+
   public List<Transaction> getAllByAccount_id(String id);
 }

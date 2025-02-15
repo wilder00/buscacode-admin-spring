@@ -33,6 +33,11 @@ public class TransactionDetail {
   @JoinColumn(name = "file_id", nullable = true, unique = false)
   private File file;
 
+  @ManyToOne
+  @JoinColumn(name = "cash_flow_category_id", nullable = true, unique = false)
+  @JsonIgnoreProperties(value = { "subCategories" })
+  private CashFlowCategory cashFlowCategory;
+
   @Column(name = "created_at", insertable = false, updatable = false)
   private Date createdAt;
 
@@ -90,6 +95,14 @@ public class TransactionDetail {
 
   public void setDeletedAt(Date deletedAt) {
     this.deletedAt = deletedAt;
+  }
+
+  public CashFlowCategory getCashFlowCategory() {
+    return cashFlowCategory;
+  }
+
+  public void setCashFlowCategory(CashFlowCategory cashFlowCategory) {
+    this.cashFlowCategory = cashFlowCategory;
   }
 
 }

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.buscacode.admin.buscacodeadmin.entities.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
@@ -38,8 +39,15 @@ public class Gallery {
   @JoinColumn(name = "created_by", referencedColumnName = "username")
   @JsonIgnoreProperties("roles")
   private User createdBy;
+
+  @Column(name = "created_at", insertable = false, updatable = false)
   private Date createdAt;
+
+  @Column(name = "updated_at", insertable = false, updatable = false)
   private Date updatedAt;
+
+  @Column(name = "deleted_at", insertable = false, updatable = true)
+  @JsonIgnore
   private Date deletedAt;
 
   /*
