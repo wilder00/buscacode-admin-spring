@@ -133,6 +133,14 @@ public class FileExplorerRepository {
     return baseFilePath + relativePath;
   }
 
+  public boolean renameFile(String actualPath, String newName) {
+
+    File oldFile = new File(actualPath);
+    File newFile = new File(newName);
+
+    return oldFile.renameTo(newFile);
+  }
+
   public String changeUserDirectoryName(String currentUsername, String newUsername) throws IOException {
     String currentUserDirectoryPath = fullDirectoryPath(currentUsername);
     String newtUserDirectoryPath = fullDirectoryPath(newUsername);
