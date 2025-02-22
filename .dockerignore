@@ -5,7 +5,9 @@
 dist
 .vscode
 logs
-target
 conf/
 libraries/
 plugins/
+external/
+.vscode/
+files/buscacodeadmin_files
