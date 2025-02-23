@@ -2,13 +2,6 @@
   "configurations": [
     {
       "type": "java",
-      "name": "PasswordUtil",
-      "request": "launch",
-      "mainClass": "com.buscacode.admin.buscacodeadmin.utils.PasswordUtil",
-      "projectName": "buscacode-admin"
-    },
-    {
-      "type": "java",
       "name": "Spring Boot-BuscacodeAdminApplication<buscacode-admin>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
@@ -17,6 +10,13 @@
       "args": "--spring.profiles.active=dev",
       //"args": "--spring.profiles.active=prod",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "PasswordUtil",
+      "request": "launch",
+      "mainClass": "com.buscacode.admin.buscacodeadmin.utils.PasswordUtil",
+      "projectName": "buscacode-admin"
     }
   ]
 }

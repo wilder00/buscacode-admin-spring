@@ -7,7 +7,7 @@ services:
       dockerfile: docker/deploy/Dockerfile
       args:
         PORT: ${PORT}
-        DB_URL_CONEXION: ${DB_URL_CONEXION}
+        DB_URL_CONNECTION: ${DB_URL_CONNECTION}
         DB_USER: ${DB_USER}
         DB_PASSWORD: ${DB_PASSWORD}
         FILES_BASEPATH: ${FILES_BASEPATH}
@@ -21,7 +21,7 @@ services:
       - .env.production
     environment:
       - TZ=America/Lima
-      - DB_URL_CONEXION=${DB_URL_CONEXION}
+      - DB_URL_CONNECTION=${DB_URL_CONNECTION}
       - HOST=0.0.0.0
       - PORT=${PORT}
     network_mode: "bridge"

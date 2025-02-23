@@ -47,3 +47,17 @@ docker-compose --env-file .env.production build  > build.log 2>&1
 ```bash
 ./mvnw flyway:migrate -Dspring.flyway.url=jdbc:mysql://localhost:3306/buscacode_admin -Dspring.flyway.user=root -Dspring.flyway.password=root
 ```
+```bash
+./mvnw flyway:migrate -Dspring.flyway.url=jdbc:mysql://127.0.0.1:3306/buscacode_admin -Dspring.flyway.user=root -Dspring.flyway.password=root
+```
+
+
+## using Makefiles
+
+```bash
+make migrate
+```
+
+```bash
+make run
+```

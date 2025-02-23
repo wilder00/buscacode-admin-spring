@@ -228,3 +228,4 @@ external/try-file/*
 # folder to save files
 files/*
 !files/.gitkeep
+passwd

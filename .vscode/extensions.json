@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "redhat.java",
+    "vscjava.vscode-spring-boot-dashboard",
+    "vmware.vscode-boot-dev-pack",
+    "vmware.vscode-spring-boot",
+    "vscjava.vscode-spring-initializr"
+  ]
+}
