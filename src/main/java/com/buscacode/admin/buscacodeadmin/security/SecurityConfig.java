@@ -42,6 +42,9 @@ import com.buscacode.admin.buscacodeadmin.services.UserService;
 public class SecurityConfig {
   @Value("${security.secret.seed:}")
   private String secretSeed;
+  @Value("${security.secret.refresh.seed:}")
+  private String refreshSecretSeed;
+  private TokenJwtConfig tokenConfig = null;
 
   @Autowired
   private AuthenticationConfiguration authenticationConfiguration;
@@ -61,7 +64,10 @@ public class SecurityConfig {
 
   @Bean
   TokenJwtConfig secretKey() {
-    return new TokenJwtConfig(secretSeed);
+    if (this.tokenConfig == null) {
+      this.tokenConfig = new TokenJwtConfig(secretSeed, refreshSecretSeed);
+    }
+    return this.tokenConfig;
   }
 
   @Bean
@@ -70,6 +76,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
         .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+        .requestMatchers(HttpMethod.POST, "/oauth/refresh").permitAll()
         .requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")
         .requestMatchers(HttpMethod.GET, "/api/products").hasAnyRole("ADMIN", "USER")
         .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("ADMIN")
@@ -95,7 +102,7 @@ public class SecurityConfig {
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOriginPatterns(
-        Arrays.asList("http://127.0.0.1:*", "http://localhost:*", "https://wildertrujillo.com"));
+        Arrays.asList("http://127.0.0.1:*", "http://localhost:*", "https://wildertrujillo.com", "https://192.168.0.*"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT"));
     config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
     config.setAllowCredentials(true);

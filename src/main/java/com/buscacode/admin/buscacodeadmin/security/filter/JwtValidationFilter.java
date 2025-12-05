@@ -32,6 +32,7 @@ import com.buscacode.admin.buscacodeadmin.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -43,12 +44,14 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtValidationFilter extends BasicAuthenticationFilter {
 
   private final SecretKey SECRET_KEY;
+  private TokenJwtConfig tokenJwtConfig;
   private UserLoggedService userLoggedService;
 
   public JwtValidationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig,
       UserLoggedService userLoggedService) {
     super(authenticationManager);
     SECRET_KEY = tokenJwtConfig.getSecretKey();
+    this.tokenJwtConfig = tokenJwtConfig;
     this.userLoggedService = userLoggedService;
   }
 
@@ -58,6 +61,9 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
     if (cookies != null) {
       for (Cookie cookie : cookies) {
         if ("token".equals(cookie.getName())) {
+          token = cookie.getValue();
+        }
+        if ("sod".equals(cookie.getName())) {
           token = cookie.getValue();
         }
       }
@@ -82,10 +88,8 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
       token = header.replace(PREFIX_TOKEN, "");
     }
 
-    System.out.println("the token: " + token);
-
     try {
-      Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
+      Claims claims = this.tokenJwtConfig.getJwtParserSecretKey().parseSignedClaims(token).getPayload();
       // String username = claims.getSubject();
       String username2 = (String) claims.get("username");
       UUID uuid = UUID.fromString((String) claims.get("id"));
@@ -113,6 +117,17 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
       chain.doFilter(request, response);
+
+    } catch (ExpiredJwtException e) {
+      Map<String, String> body = new HashMap<>();
+      body.put("error", "invalid_token");
+      body.put("message", "El token JWT ha expirado!");
+
+      response.setContentType(CONTENT_TYPE);
+      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+      response.setHeader("WWW-Authenticate",
+          "Bearer error=\"invalid_token\", error_description=\"The access token expired\"");
+      response.getWriter().write(new ObjectMapper().writeValueAsString(body));
 
     } catch (JwtException e) {
       Map<String, String> body = new HashMap<>();

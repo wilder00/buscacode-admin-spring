@@ -32,20 +32,25 @@ import jakarta.servlet.http.HttpServletResponse;
 
 //import static com.buscacode.admin.buscacodeadmin.security.TokenJwtConfig.*;
 
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private AuthenticationManager authenticationManager;
   private final SecretKey SECRET_KEY;
+  private final SecretKey SECRET_REFRESH_KEY;
   private final String CONTENT_TYPE;
+  private TokenJwtConfig tokenJwtConfig;
 
-  public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig){
+  public JwtAuthenticationFilter(AuthenticationManager authenticationManager, TokenJwtConfig tokenJwtConfig) {
     this.authenticationManager = authenticationManager;
     SECRET_KEY = tokenJwtConfig.getSecretKey();
+    SECRET_REFRESH_KEY = tokenJwtConfig.getRefreshSecretKey();
     CONTENT_TYPE = TokenJwtConfig.CONTENT_TYPE;
+    this.tokenJwtConfig = tokenJwtConfig;
   }
 
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+      throws AuthenticationException {
     User user = null;
     String username = null;
     String password = null;
@@ -63,7 +68,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       e.printStackTrace();
     }
 
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
+        password);
     Authentication authentication = authenticationManager.authenticate(authenticationToken);
     return authentication;
 
@@ -73,37 +79,47 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
       Authentication authResult) throws IOException, ServletException {
 
-        //org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
-        UserDetail user = (UserDetail) authResult.getPrincipal();
-        String username = user.getUsername();
-        UUID id = user.getId();
-        Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+    // org.springframework.security.core.userdetails.User user =
+    // (org.springframework.security.core.userdetails.User)
+    // authResult.getPrincipal();
+    UserDetail user = (UserDetail) authResult.getPrincipal();
+    String username = user.getUsername();
+    UUID id = user.getId();
+    Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
 
-        Claims claims = Jwts.claims()
-          .add("id", id)
-          .add("authorities", new ObjectMapper().writeValueAsString(roles))
-          .add("username", username)
+    Claims claims = Jwts.claims()
+        .add("id", id)
+        .add("authorities", new ObjectMapper().writeValueAsString(roles))
+        .add("username", username)
         .build();
 
-        String token = Jwts.builder()
-          .subject(username)
-          .claims(claims)
-          .expiration(new Date(System.currentTimeMillis() + 3600000 * 100)) //indicamos que expirará dentro de una hora * 100
-          .issuedAt(new Date())
-          //.signWith(SECRET_KEY)
-          .signWith(SECRET_KEY)
-          .compact();
+    String token = Jwts.builder()
+        .subject(username)
+        .claims(claims)
+        .expiration(new Date(System.currentTimeMillis() + this.tokenJwtConfig.getExpirationTimeAccessToken()))
+        .issuedAt(new Date())
+        .signWith(SECRET_KEY)
+        .compact();
 
-        // response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
-        Map<String, String> body = new HashMap<>();
-        body.put("id", id.toString());
-        body.put("token", token);
-        body.put("username", username);
-        body.put("message", String.format("Hola, %s. Has iniciado sesión!", username));
+    String refreshToken = Jwts.builder()
+        .subject(username)
+        .claims(claims)
+        .expiration(new Date(System.currentTimeMillis() + this.tokenJwtConfig.getExpirationTimeRefreshToken()))
+        .issuedAt(new Date())
+        .signWith(SECRET_REFRESH_KEY)
+        .compact();
 
-        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-        response.setContentType(CONTENT_TYPE);
-        response.setStatus(200);
+    // response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
+    Map<String, String> body = new HashMap<>();
+    body.put("id", id.toString());
+    body.put("accessToken", token);
+    body.put("refreshToken", refreshToken);
+    body.put("username", username);
+    body.put("message", String.format("Hola, %s. Has iniciado sesión!", username));
+
+    response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+    response.setContentType(CONTENT_TYPE);
+    response.setStatus(200);
   }
 
   @Override
